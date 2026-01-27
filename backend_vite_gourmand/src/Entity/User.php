@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -26,8 +27,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     /**
+     * @Assert\NotBlank(message="Le mot de passe est requis.")
+     * @Assert\Length(
+     * min = 10,
+     * minMessage = "Le mot de passe doit contenir au moins {{ limit }} caractères"
+     * )
+     * @Assert\Regex(
+     * pattern= "/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}/",
+     * message= "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial."
+     * )
      * @var string The hashed password
      */
+    
     #[ORM\Column]
     private ?string $password = null;
 
