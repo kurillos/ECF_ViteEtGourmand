@@ -35,3 +35,19 @@ VALUES
 ('Buffet Gourmand', 'Large choix de pièces cocktail', 35.00, 20, 100, 'Événementiel');
 
 FLUSH PRIVILEGES;
+
+-- ==========================================================
+-- Création de la table Menu
+-- ==========================================================
+
+CREATE TABLE IF NOT EXISTS menu (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    prix_base DECIMAL(10, 2) NOT NULL,
+    nb_pers_min INT NOT NULL,
+    nb_pers_max INT NOT NULL,
+    theme VARCHAR(100),
+    image_url VARCHAR(255),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;

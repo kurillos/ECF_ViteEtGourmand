@@ -11,6 +11,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.7",
         "doctrine/orm": "^3.6",
         "mongodb/mongodb": "*",
+        "nelmio/cors-bundle": "^2.6",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpdocumentor/type-resolver": "^1.7",
         "phpstan/phpdoc-parser": "^2.3",

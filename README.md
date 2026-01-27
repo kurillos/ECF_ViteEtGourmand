@@ -40,6 +40,11 @@ Le projet utilise une architecture hybride pour répondre aux besoins de perform
 
 - **Justifications** : Garantit l'intégrité des données et les relations complexes entre les entités.
 
+- **User** : Gestion des accès (RGPD & Sécurité ANSSI).
+
+- **Menu** : Stockage des offres commerciales (Entités métier).
+    - *Note : Utilisation du type DECIMAL(10,2) pour la précision financière.*
+
 
 ### 2. Base de données NoSQL (MongoDB Atlas)
 
@@ -49,6 +54,8 @@ Le projet utilise une architecture hybride pour répondre aux besoins de perform
 
 - **Configutation** : Hébergée sur MongoDB Atlas pour permettre une haute disponibilité et une scalabilité des données analytiques.
 
+- **Stats** : Compteurs de clics et de commandes par menu pour le tableau de bord de José.
+
 ## Installation & Configuration NoSQL
 
 1. Créez un fichier `.env` à la racine du projet.
@@ -56,3 +63,16 @@ Le projet utilise une architecture hybride pour répondre aux besoins de perform
 2. Ajoutez la chaîne de connexion MongoDB : `mongodb+srv://bocagecyril_db_user:<db_password>@cluster0.kaorimy.mongodb.net/?appName=Cluster0`
 
 3. La collection utilisée est `commandes_stats`.
+
+### 🛡️ Sécurité
+- **Authentification** : Implémentée via Symfony Security.
+- **Hachage** : Utilisation de l'algorithme `auto` (Argon2i/BCrypt par défaut) pour la protection des mots de passe.
+- **Politique de mot de passe** : Contrainte stricte de 10 caractères minimum (exigence métier client), un caractère spécial et une majuscule sont éxiger également conformément aux recommandations de l'ANSSI (Agence nationale de la sécurité des systèmes d'information).
+
+## Architecture Applicative
+
+### StatService (Pont Hybride)
+Pour répondre au besoin de statistiques en temps réel de José, j'ai implémenté un **Service Symfony** dédié :
+- **Rôle** : Centraliser toutes les interactions avec MongoDB Atlas.
+- **Principe** : Utilisation de l'injection de dépendances pour récupérer les variables d'environnement (`MONGODB_URL`).
+- **Performance** : Utilisation de l'opération atomique `$inc` de MongoDB pour garantir des compteurs précis dans charger le processurs de la base de données relationnelle. L'opération dite *atomique*, signifie que la lecture, l'incrémentation et l'écriture de la nouvelle valeur se font en une seule étape indivisible au niveau du même serveur de la base de donnée.
