@@ -29,3 +29,30 @@
 - `develop` : Branche de developpement.
 
 - `feature/` : Branche pour chaque nouvelle fonctionnalité.
+
+## Architecture des Données 
+
+Le projet utilise une architecture hybride pour répondre aux besoins de performances et d'analyse statistiques :
+
+### 1. Base de données Relationnelles (MySQL)
+
+- **Rôle** : gestion critique des données (Utilisateurs, Menus, Commandes, Allergènes).
+
+- **Justifications** : Garantit l'intégrité des données et les relations complexes entre les entités.
+
+
+### 2. Base de données NoSQL (MongoDB Atlas)
+
+- **Rôle** : Stockage des statistiques de vente et données analytiques.
+
+- **Utilisation** : Utilisée spécifiquement pour générer les graphiques du tableau de bord administrateur (comparaison du nombre de commandes par menu).
+
+- **Configutation** : Hébergée sur MongoDB Atlas pour permettre une haute disponibilité et une scalabilité des données analytiques.
+
+## Installation & Configuration NoSQL
+
+1. Créez un fichier `.env` à la racine du projet.
+
+2. Ajoutez la chaîne de connexion MongoDB : `mongodb+srv://bocagecyril_db_user:<db_password>@cluster0.kaorimy.mongodb.net/?appName=Cluster0`
+
+3. La collection utilisée est `commandes_stats`.
