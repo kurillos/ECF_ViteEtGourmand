@@ -2,8 +2,8 @@ import { Menu } from '../types/Menu';
 
 const API_URL = 'http://localhost:8000/api';
 
-export const fetchMenu = async (nom: string): Promise<Menu> => {
-    const response = await fetch(`${API_URL}/menu/${encodeURIComponent(nom)}`);
-    if (!response.ok) throw new Error('Menu non trouvé');
+export const fetchAllMenus = async (): Promise<Menu[]> => {
+    const response = await fetch('http://localhost:8000/api/menus');
+    if (!response.ok) throw new Error('Erreur réseau');
     return response.json();
 };

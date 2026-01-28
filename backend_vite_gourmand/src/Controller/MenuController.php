@@ -32,4 +32,24 @@ class MenuController extends AbstractController
             'theme' => $menu->getTheme()
         ]);
     }
+
+    #[Route('/api/menus', name: 'app_menu_index', methods: ['GET'])]
+    public function index(MenuRepository $menuRepository): JsonResponse
+    {
+        // On récupère TOUS les menus depuis MySQL
+        $menus = $menuRepository->findAll();
+
+        $data = [];
+        foreach ($menus as $menu) {
+            $data[] = [
+                'nom' => $menu->getNom(),
+                'prix' => $menu->getPrixBase(),
+                'description' => $menu->getDescription(),
+                'image' => $menu->getImageUrl(),
+                'theme' => $menu->getTheme()
+            ];
+        }
+
+        return new JsonResponse($data);
+    }
 }
