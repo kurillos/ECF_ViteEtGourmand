@@ -16,11 +16,13 @@
 
 ## Stack Technique
 
-- [cite_start]Front-end : HTML, CSS, JS
+- [cite_start]**Front-end** : HTML, CSS, JS, React 18, TypeScript, Tailwind CSS
 
-- Back-end : PHP (PDO)
+- **Back-end** : Symfony 6/7, PHP 8.2
 
-- BDD : MySQL (Relationnel) et MongoDB (NoSQL).
+- **BDD** : MySQL (Relationnel) et MongoDB (NoSQL).
+
+- **API**: REST API (JSON)
 
 ## Branches
 
@@ -83,13 +85,20 @@ Pour répondre au besoin de statistiques en temps réel de José, j'ai implémen
 - **Dashboard d'administration** : Visualisation de tous les avis clients.
 - **Modération** : Système de validation des avis via l'API Symfony.
 - **Interface React** : Utilisation de Tailwind CSS pour le rendu responsive.
+- **Public** : Consultation des manus, dépôt d'avis (sécurisé XSS), lecture des avis modérés.
+- **Admin**: Modération des avis (Validation / Suppression).
 
 ### Installation & Lancement
 1. **Backend (Symfony)** :
+    - `cd backend_vite_gourmand`
     - `composer install`
+    - ` Configurer le `env.local` (DATABASE_URL)
+    - `php bin/console doctrine:database:create`
+    - `php bin/console doctrine:migrations:migrate`
     - `php bin/console doctrine:fixtures:load` (pour charger les avis de tests)
     - `symfony serve`
 
 2. **Frontend React** :
+    - `cd frontedn`
     - `npm install`
     - `npm run dev`
