@@ -76,3 +76,20 @@ Pour répondre au besoin de statistiques en temps réel de José, j'ai implémen
 - **Rôle** : Centraliser toutes les interactions avec MongoDB Atlas.
 - **Principe** : Utilisation de l'injection de dépendances pour récupérer les variables d'environnement (`MONGODB_URL`).
 - **Performance** : Utilisation de l'opération atomique `$inc` de MongoDB pour garantir des compteurs précis dans charger le processurs de la base de données relationnelle. L'opération dite *atomique*, signifie que la lecture, l'incrémentation et l'écriture de la nouvelle valeur se font en une seule étape indivisible au niveau du même serveur de la base de donnée.
+
+## Espace Administration (Julie)
+
+### Fonctionnalités 
+- **Dashboard d'administration** : Visualisation de tous les avis clients.
+- **Modération** : Système de validation des avis via l'API Symfony.
+- **Interface React** : Utilisation de Tailwind CSS pour le rendu responsive.
+
+### Installation & Lancement
+1. **Backend (Symfony)** :
+    - `composer install`
+    - `php bin/console doctrine:fixtures:load` (pour charger les avis de tests)
+    - `symfony serve`
+
+2. **Frontend React** :
+    - `npm install`
+    - `npm run dev`

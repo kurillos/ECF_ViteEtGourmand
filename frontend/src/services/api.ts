@@ -7,3 +7,31 @@ export const fetchAllMenus = async (): Promise<Menu[]> => {
     if (!response.ok) throw new Error('Erreur réseau');
     return response.json();
 };
+
+// Fonction pour l'administrateur 
+
+export const fetchAdminAvis = async () => {
+    const response = await fetch(`${API_URL}/admin/avis`);
+    if (!response.ok) throw new Error('Erreur lors de la récupération des avis');
+    return response.json();
+};
+
+export const validateAvis = async (id:number) => {
+    const response = await fetch(`${API_URL}/admin/avis/${id}/validate`, {
+        method: 'PATCH',
+        headers: {
+            'Content-type': 'application/json',
+        },
+    });
+    if (!response.ok) throw new Error(`Erreur lors de la validation de l'avis ${id}`);
+    return response.json();
+};
+
+// Fonction pour supprimer un avis
+export const deleteAvis = async (id: number) => {
+    const response = await fetch(`${API_URL}/admin/avis/${id}`, {
+        method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Erreur lors de la suppression de l\'avis');
+    return response.json();
+};
