@@ -51,3 +51,15 @@ CREATE TABLE IF NOT EXISTS menu (
     image_url VARCHAR(255),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
+
+-- ==========================================================
+-- -- Insertion de l'utilisatrice Julie
+-- Le mot de passe est haché
+-- ==========================================================
+
+INSERT INTO `user` (`email`, `roles`, `password`) 
+VALUES (
+    'julie@viteetgourmand.fr', 
+    '["ROLE_EMPLOYE"]', 
+    '$2y$13$V.uG8X.z6K/A9YqR7J7W9uO6f5e4d3c2b1a0z9y8x7w6v5u4t3s2r' -- Remplace par ton hash réel
+);

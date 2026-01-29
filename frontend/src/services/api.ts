@@ -58,3 +58,23 @@ export const fetchAvis = async () => {
     if (!response.ok) throw new Error('Erreur lors du chargement des avis');
     return response.json();
 };
+
+export const logout = () => {
+    localStorage.removeItem('user'); // Supprime les infos
+    window.location.href = '/login'; // Force la redirection
+};
+
+export const login = async (credentials: { email: string; password: string }) => {
+    const response = await fetch(`${API_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur de connexion');
+    }
+
+    return response.json();
+};
