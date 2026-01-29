@@ -17,14 +17,19 @@ class Avis
     private ?int $id = null;
 
     #[Groups(['avis'])]
+    #[Assert\NotBlank(message: "Le nom est obligatoire")]
+    #[Assert\Length(max: 50)]
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
     #[Groups(['avis'])]
+    #[AssertNotBlank]
+    #[Assert\Length(min: 10, max: 500, minMessage: "Message trop court, il doit contenir au moins 10 caractères.")]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $message = null;
 
     #[Groups(['avis'])]
+    #[Assert\Range(min: 1, max: 5)]
     #[ORM\Column]
     private ?int $note = null;
 

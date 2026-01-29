@@ -35,3 +35,26 @@ export const deleteAvis = async (id: number) => {
     if (!response.ok) throw new Error('Erreur lors de la suppression de l\'avis');
     return response.json();
 };
+
+// Formulaire d'avis transofmration du JS en JSON
+export const postAvis = async (avisData: { nom: string; message: string; note: number}) => {
+    const response = await fetch(`${API_URL}/avis`, {
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json',
+        },
+        body: JSON.stringify(avisData),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erreur lors de l'envoi de l'avis");
+    }
+    return response.json();
+}
+
+export const fetchAvis = async () => { 
+    const response = await fetch(`${API_URL}/avis`);
+    if (!response.ok) throw new Error('Erreur lors du chargement des avis');
+    return response.json();
+};

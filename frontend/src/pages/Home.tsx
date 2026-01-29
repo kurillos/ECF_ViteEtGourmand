@@ -1,24 +1,39 @@
 import React, { useEffect, useState } from 'react';
+import { fetchAvis } from '../services/api';
 import { Menu } from '../types/Menu';
 import { fetchAllMenus } from '../services/api';
 import MenuCard from '../components/MenuCard';
 import Navbar from '../partials/Navbar';
 import Footer from '../partials/Footer';
+import AvisForm from "../components/AvisForm";
 
 const Home = () => {
   const [menus, setMenus] = useState<Menu[]>([]);
+  const [avisValides, setAvisValides] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    fetchAllMenus().then((data) => {
-        setMenus(data);
-        setLoading(false);
+useEffect(() => {
+  // 1. Chargement des menus
+  fetchAllMenus()
+    .then((data) => {
+      setMenus(data);
     })
     .catch((error) => {
-        console.error("Erreur lors du chargement des menus :", error);
-        setLoading(false);
+      console.error("Erreur lors du chargement des menus :", error);
+    })
+    .finally(() => {
+      setLoading(false); // S'exécute quoi qu'il arrive (succès ou échec)
     });
-  }, []);
+
+  // 2. Chargement des avis (indépendant)
+  fetchAvis()
+    .then((data) => {
+      setAvisValides(data);
+    })
+    .catch((error) => {
+      console.error("Erreur lors du chargement des avis :", error);
+    });
+}, []);
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900">
@@ -77,20 +92,36 @@ const Home = () => {
         </div>
       </section>
 
+      <section className="py-12 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-black italic">Votre avis nous intéresse</h2>
+            <p className="text-gray-500 mt-2">Partagez votre experience chez Vite & Gourmand</p>
+          </div>
+
+            <AvisForm/>
+        </div>
+      </section>
+
       {/* 4. AVIS CLIENTS VALIDÉS */}
       <section className="py-20 max-w-7xl mx-auto px-8">
         <h2 className="text-4xl font-bold mb-12 text-center">Ce que nos clients disent</h2>
         <div className="grid md:grid-cols-2 gap-8">
-          {[
-            { name: "Sophie D.", text: "Une prestation exceptionnelle pour notre mariage. Le menu 'Traditionnel' a bluffé tous nos invités !", stars: 5 },
-            { name: "Marc A.", text: "Professionnalisme irréprochable. La qualité des produits est au rendez-vous. Je recommande chaudement.", stars: 5 }
-          ].map((review, i) => (
-            <div key={i} className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm flex flex-col gap-4">
-              <div className="flex text-orange-400">{"★".repeat(review.stars)}</div>
-              <p className="text-gray-600 leading-relaxed italic">"{review.text}"</p>
-              <span className="font-bold text-gray-900">— {review.name}</span>
+          {avisValides.map((avis: any) => (
+            <div key={avis.id} className='bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between'>
+              <div>
+                <div className='flex text-orange-500 mb-4'>
+                  {[...Array(avis.note)].map((_, i) => <span key={i}>★</span>)}
+                </div>
+                <p className='text-gray-600 mb-6'>{avis.message}</p>
+                <p className='font-bold text-gray-900'>- {avis.nom}</p>
+              </div>
             </div>
-          ))}
+            ))}
+
+            {avisValides.length === 0 && (
+              <p className='text-center text-gray-400'>Soyez le premier à donner votre avis !</p>
+            )}
         </div>
       </section>
       <Footer />
