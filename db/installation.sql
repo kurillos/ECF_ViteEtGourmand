@@ -63,3 +63,30 @@ VALUES (
     '["ROLE_EMPLOYE"]', 
     '$2y$13$V.uG8X.z6K/A9YqR7J7W9uO6f5e4d3c2b1a0z9y8x7w6v5u4t3s2r' -- Remplace par ton hash réel
 );
+
+
+-- ==========================================================
+-- -- Création table categorie
+-- ==========================================================
+
+CREATE TABLE category (
+    id INT AUTO_INCREMENT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    PRIMARY KEY(id)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
+
+-- ==========================================================
+-- -- Création table dish (menu)
+-- ==========================================================
+
+CREATE TABLE dish (
+    id INT AUTO_INCREMENT NOT NULL,
+    category_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description LONGTEXT NOT NULL,
+    price NUMERIC(10, 2) NOT NULL,
+    INDEX IDX_957D8CB812469DE2 (category_id),
+    PRIMARY KEY(id),
+    CONSTRAINT FK_957D8CB812469DE2 FOREIGN KEY (category_id) 
+        REFERENCES category (id)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
