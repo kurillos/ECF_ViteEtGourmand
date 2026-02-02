@@ -1,6 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { fetchOpeningHours } from '../services/api';
 
 const Footer: React.FC = () => {
+  const [hours, setHours] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchOpeningHours().then(setHours).catch(console.error);
+  }, []);
+
   return (
     <footer className="bg-gray-950 text-white pt-16 pb-8 px-6 md:px-12">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 border-b border-gray-800 pb-12">
@@ -10,6 +17,26 @@ const Footer: React.FC = () => {
           <p className="text-gray-400 text-sm leading-relaxed">
             L'excellence du goût et le professionnalisme d'une équipe passionnée pour vos réceptions depuis 2010.
           </p>
+        </div>
+
+        {/* Horaires */}
+        <div>
+          <h3 className="text-white font-bold mb-4">Nos Horraires</h3>
+          <ul className="text-gray-400 text-sm space-y-2">
+            {hours.map((h) => (
+              <li key={h.id} className='flex justify-between border-b border-gray-800 pb-1'>
+              <span className='font-semibold text-white'>{h.day}</span>
+              <span>
+              {/* On vérifie si isClosed est vrai OU si l'heure d'ouverture est vide */}
+              {h.isClosed || !h.openAM ? (
+              <span className='text-red-500 font-bold italic'>Fermé</span>
+            ) : (
+            `${h.openAM} - ${h.closeAM} / ${h.openPM} - ${h.closePM}`
+          )}
+            </span>
+          </li>
+        ))}
+      </ul>
         </div>
 
         {/* Colonne 2: Liens rapides */}
@@ -25,7 +52,7 @@ const Footer: React.FC = () => {
         {/* Colonne 3: Contact */}
         <div className="space-y-4">
           <h4 className="font-bold text-orange-500 uppercase text-xs tracking-widest">Contact</h4>
-          <p className="text-gray-400 text-sm italic">75010 Paris — Rue de la Gastronomie</p>
+          <p className="text-gray-400 text-sm italic">75010 Paris — 123 Rue de la Gastronomie</p>
           <p className="text-xl font-bold tracking-tight">01 42 00 00 00</p>
         </div>
       </div>

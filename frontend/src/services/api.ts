@@ -78,3 +78,9 @@ export const login = async (credentials: { email: string; password: string }) =>
 
     return response.json();
 };
+
+export const fetchOpeningHours = async () => {
+    const response = await fetch(`${API_URL}/hours`);
+    if (!response.ok) throw new Error('Oops, nous ne pouvons afficher les horraires');
+    return response.json();
+};

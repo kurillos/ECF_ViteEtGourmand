@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\User;
 use App\Entity\Menu;
+use App\Entity\OpeningHour;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -40,15 +41,53 @@ class AppFixtures extends Fixture
             $manager->persist($menu);
         }
 
-        // 2. L'utilisateur Julie
-        $user = new User();
-        $user->setEmail('julie@viteetgourmand.fr');
-        $user->setRoles(['ROLE_EMPLOYE']); // Ajout du ; ici
+        // 2. Les Horaires
+        $days = [
+            'Lundi'     => [null, null, null, null, true],
+            'Mardi'     => ['12:00', '14:30', '19:00', '22:30', false],
+            'Mercredi'  => ['12:00', '14:30', '19:00', '22:30', false],
+            'Jeudi'     => ['12:00', '14:30', '19:00', '22:30', false],
+            'Vendredi'  => ['12:00', '14:30', '19:00', '23:30', false],
+            'Samedi'    => ['12:00', '14:30', '19:00', '23:30', false],
+            'Dimanche'  => ['12:00', '14:30', '19:00', '22:30', false],
+            
+        ];
 
-        $hashedPassword = $this->passwordHasher->hashPassword($user, 'JuliePassword123!');
-        $user->setPassword($hashedPassword);
+       
 
-        $manager->persist($user);
+        foreach ($days as $dayName => $times) {
+            $hour = new OpeningHour();
+            $hour->setDay($dayName)
+                 ->setOpenAM($times[0])
+                 ->setCloseAM($times[1])
+                 ->setOpenPM($times[2])
+                 ->setClosePM($times[3])
+                 ->setIsClosed($times[4]);
+
+                 $manager->persist($hour);
+
+        }
+
+        // 2. Les Utilisateurs
+
+        // Julie (Employée)
+        $julie = new User();
+        $julie->setEmail('julie@viteetgourmand.fr');
+        $julie->setRoles(['ROLE_EMPLOYE']);
+        $julie->setPassword($this->passwordHasher->hashPassword($julie, 'Julie123!'));
+        $manager->persist($julie);
+
+        // José l'admin
+        $jose = new User();
+        $jose->setEmail('jose@viteetgourmand.fr');
+        $jose->setRoles(['ROLE_ADMIN']);
+        $jose->setPassword($this->passwordHasher->hashPassword($jose, 'Admin123!'));
+        $manager->persist($jose);
+
+        $hashedPassword = $this->passwordHasher->hashPassword($julie, 'JuliePassword123!');
+        $julie->setPassword($hashedPassword);
+
+        $manager->persist($julie);
 
         // 3. Enregistrement global
         $manager->flush();

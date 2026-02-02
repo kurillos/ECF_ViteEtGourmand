@@ -1,127 +1,112 @@
-import React, { useState, useEffect } from 'react';
-import Navbar from "../partials/Navbar";
-import Footer from "../partials/Footer";
-import { fetchAdminAvis, validateAvis, deleteAvis } from "../services/api"
-import { logout } from '../services/api';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '../partials/Navbar';
+import { logout, fetchAdminAvis, validateAvis, deleteAvis } from '../services/api';
 
-/**
- * Page d'administration pour la modération des avis.
- * Récupère les avis via le service API et permet la validation.
- */
-
-const Admin = () => {
+const AdminDashboard: React.FC = () => {
+    const navigate = useNavigate();
     const [avis, setAvis] = useState([]);
-    const [isUpdating, setIsUpdating] = useState<number | null>(null);
+    
+    // 1. Récupération des infos utilisateur pour les rôles
+    const userJson = localStorage.getItem('user');
+    const user = userJson ? JSON.parse(userJson) : null;
+    
+    const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+    const displayName = isAdmin ? "Benoît" : "Julie";
 
-    const loadAvis = async () => {
-        fetchAdminAvis()
-        .then(setAvis)
-        .catch(console.error);
-    };
-
+    // 2. Chargement des avis au montage du composant
     useEffect(() => {
+        const loadAvis = async () => {
+            try {
+                const data = await fetchAdminAvis();
+                setAvis(data);
+            } catch (error) {
+                console.error("Erreur chargement avis", error);
+            }
+        };
         loadAvis();
     }, []);
 
-
+    // 3. Fonctions de gestion (Validate/Delete)
     const handleValidate = async (id: number) => {
-        setIsUpdating(id);
-        try{
-            await validateAvis(id);
-            loadAvis();
-        } catch (error) {
-            alert("Erreur lors de la validation");
-        } finally {
-            setIsUpdating(null);
-       }
+        await validateAvis(id);
+        setAvis(avis.filter((a: any) => a.id !== id));
     };
 
     const handleDelete = async (id: number) => {
-        if (window.confirm("Confirmer la suppression de cet avis ?")) {
-            try {
-                await deleteAvis(id);
-                loadAvis();
-            } catch (error) {
-                alert("Erreur lors de la suppression");
-            }
-        }
+        await deleteAvis(id);
+        setAvis(avis.filter((a: any) => a.id !== id));
     };
 
-     return (
-        <div className="min-h-screen bg-grey-100 font-sans">
+    return (
+        <div className="min-h-screen bg-gray-100 font-sans">
             <Navbar />
             <div className="max-w-7xl mx-auto p-8">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900 italic">Espace Administration - Julie</h1>
-                    <p className="text-gray-500">Bienvenue, Julie. Voici les avis à traiter.</p>
+                <div className="flex justify-between items-center mb-8">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900 italic">
+                            Espace {isAdmin ? 'Direction' : 'Administration'} - {displayName}
+                        </h1>
+                        <p className="text-gray-500">
+                            {isAdmin 
+                                ? "Gestion complète : menus, horaires et avis." 
+                                : "Bienvenue. Voici les avis à modérer."}
+                        </p>
+                    </div>
+
+                    <button 
+                        onClick={logout} 
+                        className="flex items-center gap-2 bg-white text-red-600 px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-red-50 transition border border-red-100"
+                    >
+                        <span>Déconnexion</span>
+                    </button>
                 </div>
 
-                <button
-                    onClick={logout}
-                    className='flex items-center gap-2 bg-white text-red-600 px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-red-50 transition border border-red-100'
-                >
-                    <span>Déconnexion</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className='h-5 w-5' fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                </button>
-            </div>
-               
-                {/* Liste des avis à valider */}
-                <div className="mt-8 bg-white p-6 rounded-xl shadow-sm">
+                {/* --- NAVIGATION SPECIFIQUE ADMIN (BENOIT) --- */}
+                {isAdmin && (
+                    <div className="flex gap-4 mb-8">
+                        <button className="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-orange-600 border border-orange-200">
+                            Modération Avis
+                        </button>
+                        <button className="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-gray-600 hover:text-orange-600 transition">
+                            Gestion des Menus
+                        </button>
+                        <button className="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-gray-600 hover:text-orange-600 transition">
+                            Gestion des Horaires
+                        </button>
+                    </div>
+                )}
+
+                {/* --- TABLEAU DES AVIS (POUR TOUS) --- */}
+                <div className="bg-white p-6 rounded-xl shadow-sm">
+                    <h2 className="text-xl font-bold mb-4 text-gray-800">Avis en attente</h2>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="border-b border-gray-100 text-gray-400 text-sm uppercase">
                                     <th className="px-6 py-4">Client</th>
-                                    <th className="px-6 py-4">Note</th>
                                     <th className="px-6 py-4">Message</th>
                                     <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {avis.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={4} className="py-8 text-center text-gray-400">Aucun avis à valider</td>
+                                {avis.map((item: any) => (
+                                    <tr key={item.id}>
+                                        <td className="py-4 px-6 font-semibold">{item.nom}</td>
+                                        <td className="py-4 px-6 text-gray-600 italic">{item.message}</td>
+                                        <td className="py-4 px-6 text-right">
+                                            <button onClick={() => handleValidate(item.id)} className="text-green-600 font-bold mr-4">Approuver</button>
+                                            <button onClick={() => handleDelete(item.id)} className="text-red-600 font-bold">Supprimer</button>
+                                        </td>
                                     </tr>
-                                ) : (
-                                    avis.map((item: any) => (
-                                        <tr key={item.id} className="border-b border-gray-50 hover:bg-fray-50 transition">
-                                            <td className="py-4 px-2 font-semibold text-gray-800">{item.nom}</td>
-                                            <td className="py-4 px-6">
-                                                <span className="flex items-center text-orange-500 font-bold">
-                                                    {item.note} <span className='ml-1 text-xs'>★</span>
-                                                </span>
-                                            </td>
-                                            <td className="py-4 px-2 text-gray-600 italic text-sm">{item.message}</td>
-                                            <td className="py-4 px-6 text-right">
-                                                {item.isValidated ? (
-                                                    <span className="text-green-500 font-bold text-xs bg-green-50 px-2 py-1 rounded">Validé</span>
-                                                ) : (
-                                                    <button
-                                                        onClick={() => handleValidate(item.id)}
-                                                        disabled={isUpdating === item.id}
-                                                        className="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-4 rounded-lg transition disabled:opacity-50"
-                                                    >
-                                                        {isUpdating === item.id ? 'Chargement...' : 'Approuver'}
-                                                    </button>
-                                                )}
-                                                <button
-                                                    onClick={() => handleDelete(item.id)}
-                                                    className="ml-2 bg-red-500 hover:bg-red-600 hover:text-white text-xs font-bold py-2 px-4 rounded-lg transition"
-                                                >
-                                                    Supprimer
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
+                                ))}
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+        </div>
     );
 };
 
-export default Admin;
+export default AdminDashboard;
