@@ -66,27 +66,71 @@ VALUES (
 
 
 -- ==========================================================
--- -- Création table categorie
+-- -- Création de la table THEME (Indépendante)
 -- ==========================================================
 
-CREATE TABLE category (
-    id INT AUTO_INCREMENT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    PRIMARY KEY(id)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
+CREATE TABLE theme (
+    theme_id INT AUTO_INCREMENT NOT NULL,
+    libelle VARCHAR(20) NOT NULL,
+    PRIMARY KEY(theme_id)
+) ENGINE = InnoDB;
 
 -- ==========================================================
--- -- Création table dish (menu)
+-- -- Création de la table PLAT (Indépendante)
 -- ==========================================================
 
-CREATE TABLE dish (
-    id INT AUTO_INCREMENT NOT NULL,
-    category_id INT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    description LONGTEXT NOT NULL,
-    price NUMERIC(10, 2) NOT NULL,
-    INDEX IDX_957D8CB812469DE2 (category_id),
-    PRIMARY KEY(id),
-    CONSTRAINT FK_957D8CB812469DE2 FOREIGN KEY (category_id) 
-        REFERENCES category (id)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
+CREATE TABLE plat (
+    plat_id INT AUTO_INCREMENT NOT NULL,
+    titre_plat VARCHAR(50) NOT NULL,
+    prix_plat DECIMAL(10, 2) NOT NULL,
+    photo LONGBLOB DEFAULT NULL,
+    PRIMARY KEY(plat_id)
+) ENGINE = InnoDB;
+
+-- ==========================================================
+-- -- Création de la table de liaison COMPOSER (n,n entre Menu et Plat)
+-- ==========================================================
+
+CREATE TABLE composer (
+    menu_id INT NOT NULL,
+    plat_id INT NOT NULL,
+    PRIMARY KEY(menu_id, plat_id),
+    CONSTRAINT FK_COMPOSER_MENU FOREIGN KEY (menu_id) REFERENCES menu (menu_id) ON DELETE CASCADE,
+    CONSTRAINT FK_COMPOSER_PLAT FOREIGN KEY (plat_id) REFERENCES plat (plat_id) ON DELETE CASCADE
+) ENGINE = InnoDB;
+
+-- ==========================================================
+-- -- Création de la table MENU (Dépend de theme)
+-- ==========================================================
+
+CREATE TABLE menu (
+    menu_id INT AUTO_INCREMENT NOT NULL,
+    theme_id INT NOT NULL,
+    titre_menu VARCHAR(50) NOT NULL,
+    description_menu VARCHAR(255) NOT NULL,
+    prix_menu DECIMAL(10, 2) NOT NULL,
+    nb_personnes INT NOT NULL,
+    regime VARCHAR(20) DEFAULT NULL,
+    quantite_restante INT NOT NULL DEFAULT 0,
+    image_menu LONGBLOB DEFAULT NULL,
+    PRIMARY KEY(menu_id),
+    CONSTRAINT FK_MENU_THEME FOREIGN KEY (theme_id) 
+        REFERENCES theme (theme_id) ON DELETE CASCADE
+) ENGINE = InnoDB;
+
+-- ==========================================================
+-- -- INSERTION DE DONNÉES DE TEST (Fixtures manuelles)
+-- ==========================================================
+
+INSERT INTO theme (libelle) VALUES ('Pâques'), ('Noël'), ('Mariage');
+
+INSERT INTO menu (theme_id, titre_menu, description_menu, prix_menu, nb_personnes, regime, quantite_restante) 
+VALUES (1, 'Menu Printanier', 'Un délice de saison', 45.00, 4, 'Végétarien', 15);
+
+INSERT INTO plat (titre_plat, prix_plat) VALUES ('Gigot d''agneau', 12.50), ('Asperges sauce mousseline', 8.00);
+
+-- ==========================================================
+-- -- Liaison Menu 1 avec Plats 1 et 2
+-- ==========================================================
+
+INSERT INTO composer (menu_id, plat_id) VALUES (1, 1), (1, 2);

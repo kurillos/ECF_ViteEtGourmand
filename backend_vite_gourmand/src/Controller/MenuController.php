@@ -2,54 +2,54 @@
 
 namespace App\Controller;
 
-use App\Repository\MenuRepository;
+use App\Entity\Menu;
+use App\Entity\Theme;
+use App\Repository\ThemeRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Service\StatService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class MenuController extends AbstractController
-{
-    #[Route('/api/menu/{nom}', name: 'app_menu_show', methods: ['GET'])]
-    public function show(string $nom, MenuRepository $menuRepository, StatService $statService): JsonResponse
+    #[Route('/api/admin/menus', name: 'app_admin_menu_', methods: ['GET'])]
+    class MenuController extends AbstractController
     {
-        // 1. Cherche le menu dans MySQL
-        $menu = $menuRepository->findOneBy(['nom' => $nom]);
+        #[Route('/create', name: 'create', methods: ['POST'])]
+        public function create(
+            Request $request,
+            EntityManagerInterface $em,
+            ThemeRepository $themeRepo,
+            ValidatorInterface $validator
+        ): JsonResponse {
+            $data = json_decode($request->getContent(), true);
 
-        if (!$menu) {
-            return new JsonResponse(['error' => 'Menu non trouvé'], 404);
+            // 1. Récupération du Thème parent
+            $theme = $themeRepo->find($data['theme_id'] ?? 0);
+            if (!$theme) {
+                return $this->json(['error' => 'Thème invalide ou manquant'], 400);
+            }
+
+            // Instancie le Menu
+            $menu = new Menu();
+            $menu->setTitreMenu($data['titre'])
+                 ->setDescriptionMenu($data['description'])
+                 ->setPrixMenu($data['prix'])
+                 ->setNbPersonnes($data['nb_pers'])
+                 ->setRegime($data['regime'] ?? null)
+                 ->setQuantiteRestante($data['quantite'] ?? 0)
+                 ->setTheme($theme);
+
+            // Validation par les Asserts
+            $errors = $validator->validate($menu);
+            if (count($errors) > 0) {
+                return $this->json(['error' => (string) $errors], 400);
+            }
+            
+            $em->persist($menu);
+            $em->flush();
+
+            return $this->json(['message' => 'Le menu à été créé avec succès !'], 201);
         }
-
-        // 2. Enregistre la vue dans MongoDB Atlas
-        $statService->incrementView($nom);
-
-        // 3. Retourne les infos en JSON (prêt pour ton futur React)
-        return new JsonResponse([
-            'nom' => $menu->getNom(),
-            'prix' => $menu->getPrixBase(),
-            'description' => $menu->getDescription(),
-            'image' => $menu->getImageUrl(),
-            'theme' => $menu->getTheme()
-        ]);
     }
-
-    #[Route('/api/menus', name: 'app_menu_index', methods: ['GET'])]
-    public function index(MenuRepository $menuRepository): JsonResponse
-    {
-        // On récupère TOUS les menus depuis MySQL
-        $menus = $menuRepository->findAll();
-
-        $data = [];
-        foreach ($menus as $menu) {
-            $data[] = [
-                'nom' => $menu->getNom(),
-                'prix' => $menu->getPrixBase(),
-                'description' => $menu->getDescription(),
-                'image' => $menu->getImageUrl(),
-                'theme' => $menu->getTheme()
-            ];
-        }
-
-        return new JsonResponse($data);
-    }
-}

@@ -11,7 +11,7 @@ class Dish
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(name: "menu_id")]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -21,15 +21,30 @@ class Dish
     )]
     private ?string $title = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[(ORM\Column(type: INT))]
+    #[(Assert\Positive(message: "Le nombre de personne doit être supérieur à 0"))]
+    private ?int $nb_pers_min = null;
+
+    #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
+    #[Assert\Positive(message: "Le prix doit être supérieur à 0")]
+    private ?int $nb_prix_by_pers = null;
+
+    #[(ORM\Column(length: 50))]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-Z0-9\s'àâäéèêëîïôöùûüç\-]{3,100}$/",
+        message: "Le titre contient des caractères non autorisés."
+    )]
+    private ?string $regime = null;
+
+    #[(ORM\Column(length: 50))]
     private ?string $description = null;
 
-    #[ORM\Column]
-    #[Assert\Positive(message: "Le prix doit être supérieur à 0")]
-    private ?float $price = null;
+    #[(ORM\Column(type: INT))]
+    #[(Assert\Positive(message: "Le nombre de personne doit être supérieur à 0"))]
+    private ?int $quantite_restante = null;
 
     #[ORM\ManyToOne(inversedBy: 'dishes')]
-    private ?Category $category = null;
+    private ?Theme $theme = null;
 
     public function getId(): ?int
     {
