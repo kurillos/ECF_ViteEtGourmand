@@ -6,6 +6,7 @@ use App\Repository\MenuRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
 class Menu
@@ -13,11 +14,16 @@ class Menu
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: "menu_id")]
+    #[Groups(['main'])]
     private ?int $id = null;
 
-    #[ORM\Column(name: "theme_id")]
     #[ORM\ManyToOne(targetEntity: Theme::class)]
-    #[ORM\JoinColumn(name: "theme_id", referencedColumnName: "theme_id", nullable: false)]
+    #[ORM\JoinColumn(
+    name: "theme_id",
+    referencedColumnName: "theme_id",
+    nullable: false
+    )]
+    #[Groups(['main'])]
     private ?Theme $theme = null;
 
     #[ORM\Column(length: 50)]
@@ -26,29 +32,36 @@ class Menu
         pattern: "/^[a-zA-Z0-9\s'àâäéèêëîïôöùûüç\-]{3,50}$/",
         message: "Le titre contient des caractères interdits."
     )]
+    #[Groups(['main'])]
     private ?string $titre_menu = null;
 
-     #[ORM\Column(type: Types::TEXT)]
-     #[Assert\NotBlank]
+    #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
+    #[Groups(['main'])]
     private ?string $description_menu = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\PositiveOrZero]
+    #[Groups(['main'])]
     private ?string $prix_menu = null;
 
     #[ORM\Column]
     #[Assert\Positive]
+    #[Groups(['main'])]
     private ?int $nb_personnes = null;   
 
     #[ORM\Column(length: 20, nullable: true)]
     #[Assert\Length(max: 20)]
+    #[Groups(['main'])]
     private ?string $regime = null;
 
     #[ORM\Column(type: "integer")]
     #[Assert\PositiveOrZero]
+    #[Groups(['main'])]
     private ?int $quantite_restante = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['main'])]
     private ?string $image_url = null;
 
     public function getId(): ?int
@@ -56,72 +69,72 @@ class Menu
         return $this->id;
     }
 
-    public function getPrixBase(): ?string
+    public function getPrixMenu(): ?string
     {
-        return $this->prix_base;
+        return $this->prix_menu;
     }
 
-    public function setPrixBase(string $prix_base): static
+    public function setPrixMenu(string $prix_menu): static
     {
-        $this->prix_base = $prix_base;
+        $this->prix_menu = $prix_menu;
 
         return $this;
     }
 
-    public function getNom(): ?string
+    public function getTitreMenu(): ?string
     {
-        return $this->nom;
+        return $this->titre_menu;
     }
 
-    public function setNom(string $nom): static
+    public function setTitreMenu(string $titre_menu): static
     {
-        $this->nom = $nom;
+        $this->titre_menu = $titre_menu;
 
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getDescriptionMenu(): ?string
     {
-        return $this->description;
+        return $this->description_menu;
     }
 
-    public function setDescription(string $description): static
+    public function setDescriptionMenu(string $description_menu): static
     {
-        $this->description = $description;
+        $this->description_menu = $description_menu;
 
         return $this;
     }
 
-    public function getNbPersMin(): ?int
+    public function getNbPersonnes(): ?int
     {
-        return $this->nb_pers_min;
+        return $this->nb_personnes;
     }
 
-    public function setNbPersMin(int $nb_pers_min): static
+    public function setNbPersonnes(int $nb_personnes): static
     {
-        $this->nb_pers_min = $nb_pers_min;
+        $this->nb_personnes = $nb_personnes;
 
         return $this;
     }
 
-    public function getNbPersMax(): ?int
+    public function getQuantiteRestante(): ?int
     {
-        return $this->nb_pers_max;
+        return $this->quantite_restante;
     }
 
-    public function setNbPersMax(int $nb_pers_max): static
+    public function setQuantiteRestante(int $quantite_restante): static
     {
-        $this->nb_pers_max = $nb_pers_max;
+        $this->quantite_restante = $quantite_restante;
 
         return $this;
     }
 
-    public function getTheme(): ?string
+    public function getTheme(): ?Theme
     {
         return $this->theme;
     }
 
-    public function setTheme(?string $theme): static
+    public function setTheme(?Theme $theme): static
     {
         $this->theme = $theme;
 
@@ -136,7 +149,6 @@ class Menu
     public function setImageUrl(string $image_url): static
     {
         $this->image_url = $image_url;
-
         return $this;
     }
 }

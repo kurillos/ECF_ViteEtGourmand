@@ -110,7 +110,7 @@ class OpeningHour
     return $this;
 }
 
-    public function isIsClosed(): ?bool
+    public function getIsClosed(): ?bool
 {
     return $this->isClosed;
 }

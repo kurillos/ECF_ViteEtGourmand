@@ -2,100 +2,48 @@
 
 namespace App\Entity;
 
-use App\Repository\DishRepository;
+use App\Repository\PlatRepository; // Vérifie que le nom du repo est correct
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: DishRepository::class)]
-class Dish
+#[ORM\Entity(repositoryClass: PlatRepository::class)]
+class Plat
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: "menu_id")]
+    #[ORM\Column(name: "plat_id")] // Conforme MCD
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\Regex(
-        pattern: "/^[a-zA-Z0-9\s'àâäéèêëîïôöùûüç\-]{3,100}$/",
-        message: "Le titre contient des caractères non autorisés."
-    )]
-    private ?string $title = null;
+    #[ORM\Column(name: "titre_plat", length: 50)] // Conforme MCD
+    private ?string $titre_plat = null;
 
-    #[(ORM\Column(type: INT))]
-    #[(Assert\Positive(message: "Le nombre de personne doit être supérieur à 0"))]
-    private ?int $nb_pers_min = null;
-
-    #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
-    #[Assert\Positive(message: "Le prix doit être supérieur à 0")]
-    private ?int $nb_prix_by_pers = null;
-
-    #[(ORM\Column(length: 50))]
-    #[Assert\Regex(
-        pattern: "/^[a-zA-Z0-9\s'àâäéèêëîïôöùûüç\-]{3,100}$/",
-        message: "Le titre contient des caractères non autorisés."
-    )]
-    private ?string $regime = null;
-
-    #[(ORM\Column(length: 50))]
-    private ?string $description = null;
-
-    #[(ORM\Column(type: INT))]
-    #[(Assert\Positive(message: "Le nombre de personne doit être supérieur à 0"))]
-    private ?int $quantite_restante = null;
-
-    #[ORM\ManyToOne(inversedBy: 'dishes')]
-    private ?Theme $theme = null;
+    #[ORM\Column(type: Types::BLOB, nullable: true)] // Conforme MCD
+    private $photo = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getTitrePlat(): ?string
     {
-        return $this->title;
+        return $this->titre_plat;
     }
 
-    public function setTitle(string $title): static
+    public function setTitrePlat(string $titre_plat): static
     {
-        $this->title = $title;
-
+        $this->titre_plat = $titre_plat;
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getPhoto()
     {
-        return $this->description;
+        return $this->photo;
     }
 
-    public function setDescription(string $description): static
+    public function setPhoto($photo): static
     {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function getPrice(): ?float
-    {
-        return $this->price;
-    }
-
-    public function setPrice(float $price): static
-    {
-        $this->price = $price;
-
-        return $this;
-    }
-
-    public function getCategory(): ?Category
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?Category $category): static
-    {
-        $this->category = $category;
-
+        $this->photo = $photo;
         return $this;
     }
 }

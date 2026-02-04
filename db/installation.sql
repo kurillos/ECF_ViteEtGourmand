@@ -134,3 +134,18 @@ INSERT INTO plat (titre_plat, prix_plat) VALUES ('Gigot d''agneau', 12.50), ('As
 -- ==========================================================
 
 INSERT INTO composer (menu_id, plat_id) VALUES (1, 1), (1, 2);
+
+-- ==========================================================
+-- -- Table horaires
+-- ==========================================================
+
+CREATE TABLE horaire (
+    id INT AUTO_INCREMENT NOT NULL,
+    jour VARCHAR(10) NOT NULL,
+    ouverture_matin VARCHAR(5) DEFAULT NULL,
+    fermeture_matin VARCHAR(5) DEFAULT NULL,
+    ouverture_soir VARCHAR(5) DEFAULT NULL,
+    fermeture_soir VARCHAR(5) DEFAULT NULL,
+    is_closed BOOLEAN NOT NULL DEFAULT FALSE,
+    PRIMARY KEY(id)
+) ENGINE = InnoDB;

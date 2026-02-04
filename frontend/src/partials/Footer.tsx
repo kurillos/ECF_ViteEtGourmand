@@ -24,19 +24,27 @@ const Footer: React.FC = () => {
           <h3 className="text-white font-bold mb-4">Nos Horraires</h3>
           <ul className="text-gray-400 text-sm space-y-2">
             {hours.map((h) => (
-              <li key={h.id} className='flex justify-between border-b border-gray-800 pb-1'>
+            <li key={h.id} className='flex justify-between border-b border-gray-800 pb-1'>
               <span className='font-semibold text-white'>{h.day}</span>
-              <span>
-              {/* On vérifie si isClosed est vrai OU si l'heure d'ouverture est vide */}
-              {h.isClosed || !h.openAM ? (
-              <span className='text-red-500 font-bold italic'>Fermé</span>
-            ) : (
-            `${h.openAM} - ${h.closeAM} / ${h.openPM} - ${h.closePM}`
-          )}
-            </span>
-          </li>
-        ))}
-      </ul>
+                <span className="text-right">
+                  {h.isClosed ? (
+                    <span className='text-red-500 font-bold italic'>Fermé</span>
+                    ) : (
+                      <div className="flex flex-col text-[11px]">
+                        {/* Créneau Matin */}
+                        <div>
+                        {h.openAM && h.closeAM ? `${h.openAM} - ${h.closeAM}` : <span className="text-red-400 italic">Midi: Fermé</span>}
+                        </div>
+                        {/* Créneau Soir */}
+                        <div>
+                          {h.openPM && h.closePM ? `${h.openPM} - ${h.closePM}` : <span className="text-red-400 italic">Soir: Fermé</span>}
+                        </div>
+                      </div>
+                    )}
+                  </span>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Colonne 2: Liens rapides */}

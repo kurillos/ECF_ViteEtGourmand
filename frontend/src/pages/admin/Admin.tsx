@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../partials/Navbar';
-import { logout, fetchAdminAvis, validateAvis, deleteAvis } from '../services/api';
+import Navbar from '../../partials/Navbar';
+import { logout, fetchAdminAvis, validateAvis, deleteAvis } from '../../services/api';
+import AdminHoraires from './AdminHoraires';
 
 const AdminDashboard: React.FC = () => {
     const navigate = useNavigate();
@@ -37,6 +38,18 @@ const AdminDashboard: React.FC = () => {
         await deleteAvis(id);
         setAvis(avis.filter((a: any) => a.id !== id));
     };
+
+    const [menus, setMenus] = useState<any[]>([]);
+
+    // Charge les menus
+    useEffect(() => {
+        fetch('http://localhost:8000/api/admin/menus')
+            .then(res => res.json())
+            .then(data => setMenus(data));
+    }, []);
+
+    const [hours, setHours] = useState<any[]>([]);
+
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans">
@@ -104,6 +117,25 @@ const AdminDashboard: React.FC = () => {
                         </table>
                     </div>
                 </div>
+
+                {/* --- TABLEAU DES MENUS --- */}
+                <div className="bg-white p-6 rounded-xl shadow-sm mt-8">
+                    <h2 className="text-xl font-bold mb-4 text-gray-800">Menus</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {menus.map((menu: any) => (
+                            <div key={menu.id} className="text-sm text-gray-600">
+                                <h3 className="font-bold text-orange-600">{menu.titre_menu}</h3>
+                                <p className="text-sm text-gray-600">{menu.description_menu}</p>
+                                <div className="flex justify-between mt-2 font-bold">
+                                    <span>{menu.prix_menu}</span>
+                                    <span className='text-gray-400'>Stock: {menu.quantite_restante}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <AdminHoraires />
             </div>
         </div>
     );

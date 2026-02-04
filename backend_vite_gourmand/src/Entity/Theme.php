@@ -16,10 +16,8 @@ class Theme
     private ?int $id = null;
 
     #[ORM\Column(length: 20)]
+    #[Groups(['main'])]
     private ?string $libelle = null;
-
-    #[ORM\OneToMany(mappedBy: 'theme', targetEntity: Menu::class)]
-    private Collection $menus;
 
     public function __construct()
     {
@@ -33,12 +31,12 @@ class Theme
 
     public function getLibelle(): ?string
     {
-        return $this->$libelle;
+        return $this->libelle;
     }
 
-    public function setLibelle(string $name): static
+    public function setLibelle(string $libelle): static
     {
-        $this->name = $libelle;
+        $this->libelle = $libelle; 
 
         return $this;
     }
@@ -49,15 +47,6 @@ class Theme
     public function getMenus(): Collection
     {
         return $this->menus;
-    }
-
-    public function addMenu(Menu $menu): static
-    {
-        if (!$this->menus->contains($menu)) {
-            $this->menus->add($menu);
-            $menu->setTheme($this);
-        }
-        return $this;
     }
 
     public function removeMenu(Menu $menu): static

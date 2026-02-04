@@ -6,6 +6,8 @@ use App\Repository\OpeningHourRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManagerInterface;
 
 final class OpeningHourController extends AbstractController
 {
@@ -13,20 +15,39 @@ final class OpeningHourController extends AbstractController
     public function index(OpeningHourRepository $repository): JsonResponse
     {
         $hours = $repository->findAll();
+        return $this->json($hours, 200, [], ['groups' => 'main']);
+    }
 
-        $data = [];
-        foreach ($hours as $hour) {
-            $data[] = [
-                'id' => $hour->getId(),
-                'day' => $hour->getDay(),
-                'openAM' => $hour->getOpensAM(),
-                'closeAM' => $hour->getCloseAM(),
-                'openPM' => $hour->getOpenPm(),
-                'closePM' => $hour->getClosePM(),
-                'isClosed' => $hour->getIsClosed(),
-            ];
+    #[Route('/api/admin/hours/{id}', name: 'app_admin_hours_update', methods: ['PUT'])]
+    public function update(
+        int $id,
+        Request $request,
+        OpeningHourRepository $repository,
+        EntityManagerInterface $em
+    ): JsonResponse {
+        $hour = $repository->find($id);
+        
+        if (!$hour) {
+            return $this->json(['error' => 'Horaire non trouvé'], 404);
         }
+        
+        $data = json_decode($request->getContent(), true);
 
-        return $this->json($data);
+        $hour->setOpenAM(!empty($data['openAM']) ? $data['openAM'] : null)
+             ->setCloseAM(!empty($data['closeAM']) ? $data['closeAM'] : null)
+             ->setOpenPM(!empty($data['openPM']) ? $data['openPM'] : null)
+             ->setClosePM(!empty($data['closePM']) ? $data['closePM'] : null)
+             ->setIsClosed((bool) ($data['isClosed'] ?? false));
+
+        $em->flush();
+
+        return $this->json(['message' => 'Horaires mis à jour avec succès !']);
+    }
+
+    #[Route('/api/hours', name: 'app_hours_public', methods: ['GET'])]
+    public function publicIndex(OpeningHourRepository $repository): JsonResponse
+    {
+        $hours = $repository->findAll();
+        return $this->json($hours, 200, [], ['groups' => 'main']);
     }
 }

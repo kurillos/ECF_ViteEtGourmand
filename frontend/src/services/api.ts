@@ -37,7 +37,7 @@ export const deleteAvis = async (id: number) => {
 };
 
 // Formulaire d'avis transofmration du JS en JSON
-export const postAvis = async (avisData: { nom: string; message: string; note: number}) => {
+export const postAvis = async (avisData: { message: string; note: number}) => {
     const response = await fetch(`${API_URL}/avis`, {
         method: 'POST',
         headers: {

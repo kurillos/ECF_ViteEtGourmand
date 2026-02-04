@@ -4,18 +4,25 @@ namespace App\Controller;
 
 use App\Entity\Menu;
 use App\Entity\Theme;
+use App\Repository\MenuRepository;
 use App\Repository\ThemeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\StatService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-    #[Route('/api/admin/menus', name: 'app_admin_menu_', methods: ['GET'])]
     class MenuController extends AbstractController
     {
+
+        #[Route('/api/menus', name: 'app_menus_public', methods: ['GET'])]
+        public function publicList(MenuRepository $menuRepo): JsonResponse
+        {
+            return $this->json($menuRepo->findAll());
+        }
+
         #[Route('/create', name: 'create', methods: ['POST'])]
         public function create(
             Request $request,
@@ -51,5 +58,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
             $em->flush();
 
             return $this->json(['message' => 'Le menu à été créé avec succès !'], 201);
+        }
+
+        #[Route('/api/admin/menus', name: 'app_admin_menus_list', methods: ['GET'])]
+        public function list(MenuRepository $menuRepo): JsonResponse
+        {
+            return $this->json($menuRepo->findAll(), 200, [], ['groups' => 'main']);
         }
     }

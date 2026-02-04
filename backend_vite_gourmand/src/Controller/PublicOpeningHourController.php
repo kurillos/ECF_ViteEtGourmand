@@ -9,12 +9,10 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class PublicOpeningHourController extends AbstractController
 {
-    #[Route('/api/hours', name: 'api_public_hours_index', methods: ['GET'])]
-    public function index(OpeningHourRepository $repository): JsonResponse
+    #[Route('/api/hours', name: 'app_opening_hours_public', methods: ['GET'])]
+    public function getPublicHours(OpeningHourRepository $repo): JsonResponse
     {
-        $hours = $repository->findAll();
-        
-        // On retourne les données en JSON pour React
-        return $this->json($hours, 200, [], ['groups' => 'main']);
+        // Utilise le groupe 'main' pour que les données ne soient pas vides
+        return $this->json($repo->findAll(), 200, [], ['groups' => 'main']);
     }
 }

@@ -19,16 +19,39 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        
+        api:
+            pattern: ^/api
+            stateless: true
+            # Si tu n'utilises pas encore de JWT, on laisse "security: false" 
+            # temporairement pour tester si les données s'affichent enfin
+            security: false
+        
         main:
             lazy: true
             provider: app_user_provider
+            json_login:
+                check_path: api_login
+                username_path: email
+                password_path: password
             # Supprime toute ligne mentionning 'custom_authenticator' ou 'form_login'
             # On laisse le firewall "ouvert" pour que notre contrôleur API fasse le travail
 
     # Note: Only the *first* matching rule is applied
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        # 1. Routes publiques (doivent être en haut)
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/hours, roles: PUBLIC_ACCESS }
+        - { path: ^/api/menus, roles: PUBLIC_ACCESS }
+
+        # 2. Lecture seule
+        - { path: ^/api/avis, roles: PUBLIC_ACCess, methods: [GET] }
+        
+
+        # 3. Routes protégées
+        - { path: ^/api/avis, roles: ROLE_USER, methods: [POST] }
+        - { path: ^/api/admin, roles: ROLE_EMPLOYE }
+        
 
 when@test:
     security:

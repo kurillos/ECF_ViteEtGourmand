@@ -22,7 +22,7 @@ useEffect(() => {
       console.error("Erreur lors du chargement des menus :", error);
     })
     .finally(() => {
-      setLoading(false); // S'exécute quoi qu'il arrive (succès ou échec)
+      setLoading(false);
     });
 
   // 2. Chargement des avis (indépendant)
@@ -86,7 +86,7 @@ useEffect(() => {
           <h2 className="text-4xl font-bold mb-10">Nos Menus du Moment</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {menus.map((menu) => (
-              <MenuCard key={menu.nom} menu={menu} />
+              <MenuCard key={menu.id} menu={menu} />
             ))}
           </div>
         </div>
