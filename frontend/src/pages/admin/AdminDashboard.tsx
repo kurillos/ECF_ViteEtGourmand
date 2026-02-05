@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../partials/Navbar';
 import { logout, fetchAdminAvis, validateAvis, deleteAvis } from '../../services/api';
@@ -7,28 +8,35 @@ import AdminHoraires from './AdminHoraires';
 const AdminDashboard: React.FC = () => {
     const navigate = useNavigate();
     const [avis, setAvis] = useState([]);
+    const [menus, setMenus] = useState<any[]>([]);
     
-    // 1. Récupération des infos utilisateur pour les rôles
+    // 1. Récupération des infos utilisateur
     const userJson = localStorage.getItem('user');
     const user = userJson ? JSON.parse(userJson) : null;
     
     const isAdmin = user?.roles?.includes('ROLE_ADMIN');
-    const displayName = isAdmin ? "Benoît" : "Julie";
 
-    // 2. Chargement des avis au montage du composant
+    const displayName = isAdmin ? "José" : "Julie";
+
+    const canManage = isAdmin || user?.roles?.includes('ROLE_EMPLOYE') || user?.roles?.includes('ROLE_USER');
+
+    // 2. Chargement des données
     useEffect(() => {
-        const loadAvis = async () => {
+        const loadData = async () => {
             try {
-                const data = await fetchAdminAvis();
-                setAvis(data);
+                const avisData = await fetchAdminAvis();
+                setAvis(avisData);
+
+                const menusRes = await fetch('http://localhost:8000/api/admin/menus');
+                const menusData = await menusRes.json();
+                setMenus(menusData);
             } catch (error) {
-                console.error("Erreur chargement avis", error);
+                console.error("Erreur chargement données", error);
             }
         };
-        loadAvis();
+        loadData();
     }, []);
 
-    // 3. Fonctions de gestion (Validate/Delete)
     const handleValidate = async (id: number) => {
         await validateAvis(id);
         setAvis(avis.filter((a: any) => a.id !== id));
@@ -38,18 +46,6 @@ const AdminDashboard: React.FC = () => {
         await deleteAvis(id);
         setAvis(avis.filter((a: any) => a.id !== id));
     };
-
-    const [menus, setMenus] = useState<any[]>([]);
-
-    // Charge les menus
-    useEffect(() => {
-        fetch('http://localhost:8000/api/admin/menus')
-            .then(res => res.json())
-            .then(data => setMenus(data));
-    }, []);
-
-    const [hours, setHours] = useState<any[]>([]);
-
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans">
@@ -63,7 +59,7 @@ const AdminDashboard: React.FC = () => {
                         <p className="text-gray-500">
                             {isAdmin 
                                 ? "Gestion complète : menus, horaires et avis." 
-                                : "Bienvenue. Voici les avis à modérer."}
+                                : "Bienvenue. Voici les avis à modérer et les commandes."}
                         </p>
                     </div>
 
@@ -75,22 +71,26 @@ const AdminDashboard: React.FC = () => {
                     </button>
                 </div>
 
-                {/* --- NAVIGATION SPECIFIQUE ADMIN (BENOIT) --- */}
-                {isAdmin && (
-                    <div className="flex gap-4 mb-8">
+                {/* --- NAVIGATION --- */}
+                {canManage && (
+                    <div className="flex flex-wrap gap-4 mb-8">
                         <button className="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-orange-600 border border-orange-200">
                             Modération Avis
                         </button>
-                        <button className="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-gray-600 hover:text-orange-600 transition">
+                        <button className="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-gray-600 hover:text-orange-600 transition border border-transparent">
                             Gestion des Menus
                         </button>
-                        <button className="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-gray-600 hover:text-orange-600 transition">
+                        <button className="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-gray-600 hover:text-orange-600 transition border border-transparent">
                             Gestion des Horaires
                         </button>
+                        <Link to="/admin/commandes" className="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-gray-600 hover:text-orange-600 transition flex items-center border border-transparent">
+                            <span className="mr-2">📦</span>
+                            Gestion des Commandes
+                        </Link>
                     </div>
                 )}
 
-                {/* --- TABLEAU DES AVIS (POUR TOUS) --- */}
+                {/* --- TABLEAU DES AVIS --- */}
                 <div className="bg-white p-6 rounded-xl shadow-sm">
                     <h2 className="text-xl font-bold mb-4 text-gray-800">Avis en attente</h2>
                     <div className="overflow-x-auto">
@@ -108,8 +108,8 @@ const AdminDashboard: React.FC = () => {
                                         <td className="py-4 px-6 font-semibold">{item.nom}</td>
                                         <td className="py-4 px-6 text-gray-600 italic">{item.message}</td>
                                         <td className="py-4 px-6 text-right">
-                                            <button onClick={() => handleValidate(item.id)} className="text-green-600 font-bold mr-4">Approuver</button>
-                                            <button onClick={() => handleDelete(item.id)} className="text-red-600 font-bold">Supprimer</button>
+                                            <button onClick={() => handleValidate(item.id)} className="text-green-600 font-bold mr-4 hover:underline">Approuver</button>
+                                            <button onClick={() => handleDelete(item.id)} className="text-red-600 font-bold hover:underline">Supprimer</button>
                                         </td>
                                     </tr>
                                 ))}
@@ -123,12 +123,14 @@ const AdminDashboard: React.FC = () => {
                     <h2 className="text-xl font-bold mb-4 text-gray-800">Menus</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {menus.map((menu: any) => (
-                            <div key={menu.id} className="text-sm text-gray-600">
+                            <div key={menu.id} className="p-4 border border-gray-50 rounded-lg bg-gray-50">
                                 <h3 className="font-bold text-orange-600">{menu.titre_menu}</h3>
-                                <p className="text-sm text-gray-600">{menu.description_menu}</p>
-                                <div className="flex justify-between mt-2 font-bold">
-                                    <span>{menu.prix_menu}</span>
-                                    <span className='text-gray-400'>Stock: {menu.quantite_restante}</span>
+                                <p className="text-xs text-gray-500 mb-2">{menu.description_menu}</p>
+                                <div className="flex justify-between mt-2 font-bold text-sm">
+                                    <span>{menu.prix_menu}€</span>
+                                    <span className={menu.quantite_restante < 5 ? 'text-red-500' : 'text-gray-400'}>
+                                        Stock: {menu.quantite_restante}
+                                    </span>
                                 </div>
                             </div>
                         ))}

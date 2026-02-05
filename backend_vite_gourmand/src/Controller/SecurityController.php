@@ -2,26 +2,37 @@
 
 namespace App\Controller;
 
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 class SecurityController extends AbstractController
 {
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
-   public function apiLogin(Request $request, UserRespository $userRepository, UserPasswordHasherInterface $passwordHasher): JsonResponse 
+    public function apiLogin(
+        Request $request, 
+        UserRepository $userRepository,
+        UserPasswordHasherInterface $passwordHasher
+    ): JsonResponse 
     {
         $data = json_decode($request->getContent(), true);
-        $user = $userRepository->findOneBy(['email' => $data['email'] ?? '']);
+        $email = $data['email'] ?? '';
+        $password = $data['password'] ?? '';
 
-        if (!$user || $passwordHasher->isPasswordValid($user, $data['password'] ?? '')) {
+        $user = $userRepository->findOneBy(['email' => $email]);
+
+        if (!$user || !$passwordHasher->isPasswordValid($user, $password)) {
             return $this->json(['message' => 'Identifiants invalides'], 401);
         }
 
-    return $this->json([
-        'user' => $user->getUserIdentifier(),
-        'roles' => $user->getRoles(),
-        'message' => 'Connexion réussie'
+        return $this->json([
+            'token' => 'session_active_julie',
+            'email' => $user->getUserIdentifier(),
+            'roles' => $user->getRoles(),
+            'message' => 'Connexion réussie'
         ]);
     }
 
