@@ -19,14 +19,23 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        login:
+            pattern: ^/api/login
+            stateless: true
+            json_login:
+                check_path: /api/login_check
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
         
         api:
             pattern: ^/api
+            security: true
             stateless: true
-            # Si tu n'utilises pas encore de JWT, on laisse "security: false" 
-            # temporairement pour tester si les données s'affichent enfin
-            security: false
-        
+            jwt: ~
+            
         main:
             lazy: true
             provider: app_user_provider
@@ -45,7 +54,7 @@ security:
         - { path: ^/api/menus, roles: PUBLIC_ACCESS }
 
         # 2. Lecture seule
-        - { path: ^/api/avis, roles: PUBLIC_ACCess, methods: [GET] }
+        - { path: ^/api/avis, roles: PUBLIC_ACCESS, methods: [GET] }
         
 
         # 3. Routes protégées

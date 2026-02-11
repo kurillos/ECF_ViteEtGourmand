@@ -1,30 +1,57 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../services/api';
 
-const AdminNavbar: React.FC = () => {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const isAdmin = user.roles?.includes('ROLE_ADMIN');
+export interface AdminNavbarProps {
+    activeTab: string;
+    onTabChange: (tab: string) => void;
+}
 
+const AdminNavbar: React.FC<AdminNavbarProps> = ({ activeTab, onTabChange }) => {
+    console.log("--- DEBUG NAVBAR ---");
+    console.log("Valeur de activeTab :", activeTab);
+    console.log("Type de setActiveTab :", typeof onTabChange);
+    console.log("Contenu de setActiveTab :", onTabChange);
+    console.log("Onglet actif reçu par la Navbar :", activeTab);
     return (
         <nav className="bg-white shadow-sm border-b border-gray-100 mb-8">
             <div className="max-w-7xl mx-auto px-8 py-4 flex justify-between items-center">
                 <div className="flex items-center gap-6">
-                    <Link to="/admin" className="text-xl font-bold text-orange-600 italic">Vite & Gourmand Admin</Link>
+                    <span className="text-xl font-bold text-orange-600 italic cursor-default">
+                        Vite & Gourmand Admin
+                    </span>
                     
-                    <div className="flex gap-4">
-                        <Link to="/admin" className="text-sm font-medium text-gray-600 hover:text-orange-600">Dashboard</Link>
-                        <Link to="/admin/commandes" className="text-sm font-medium text-gray-600 hover:text-orange-600">Commandes</Link>
-                        {isAdmin && (
-                            <>
-                                <button className="text-sm font-medium text-gray-600 hover:text-orange-600">Menus</button>
-                                <button className="text-sm font-medium text-gray-600 hover:text-orange-600">Horaires</button>
-                            </>
-                        )}
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={() => onTabChange('avis')}
+                            className={`px-4 py-2 rounded-lg font-bold transition ${activeTab === 'avis' ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
+                        >
+                            Avis
+                        </button>
+                        <button 
+                            onClick={() => onTabChange('menus')}
+                            className={`px-4 py-2 rounded-lg font-bold transition ${activeTab === 'menus' ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
+                        >
+                            Menus
+                        </button>
+                        <button 
+                            onClick={() => onTabChange('horaires')}
+                            className={`px-4 py-2 rounded-lg font-bold transition ${activeTab === 'horaires' ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
+                        >
+                            Horaires
+                        </button>
+                        <button 
+                            onClick={() => onTabChange('commandes')}
+                            className={`px-4 py-2 rounded-lg font-bold transition ${activeTab === 'commandes' ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
+                        >
+                            📦 Commandes
+                        </button>
                     </div>
                 </div>
-                
-                <button onClick={logout} className="text-sm font-bold text-red-500 hover:text-red-700">
+
+                <button 
+                    onClick={logout}
+                    className="text-red-500 font-bold hover:text-red-700 transition"
+                >
                     Déconnexion
                 </button>
             </div>

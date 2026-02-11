@@ -1,9 +1,8 @@
 import { Navigate } from "react-router";
 
-
 interface ProtectedRouteProps {
     children: React.ReactNode;
-    allowedRoles?: string[]; // On change 'role: string' en 'allowedRoles: string[]'
+    allowedRoles?: string[]; 
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
@@ -14,10 +13,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
         return <Navigate to="/login" replace />;
     }
 
-    // Si on a défini des rôles autorisés, on vérifie si l'utilisateur en possède au moins UN
+    const userRoles = user.user?.roles || []; 
+
     if (allowedRoles) {
-        const hasAccess = user.roles.some((role: string) => allowedRoles.includes(role));
+        const hasAccess = userRoles.some((role: string) => allowedRoles.includes(role));
+        
         if (!hasAccess) {
+            console.warn("Accès refusé : Rôles insuffisants", userRoles);
             return <Navigate to="/" replace />; 
         }
     }

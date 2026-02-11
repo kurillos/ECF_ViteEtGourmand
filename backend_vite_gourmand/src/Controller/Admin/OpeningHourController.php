@@ -14,11 +14,11 @@ final class OpeningHourController extends AbstractController
     #[Route('/api/admin/hours', name: 'app_admin_hours_index', methods: ['GET'])]
     public function index(OpeningHourRepository $repository): JsonResponse
     {
-        $hours = $repository->findAll();
-        return $this->json($hours, 200, [], ['groups' => 'main']);
+      $hours = $repository->findAll();
+      return $this->json($hours, 200, [], ['groups' => 'main']);
     }
 
-    #[Route('/api/admin/hours/{id}', name: 'app_admin_hours_update', methods: ['PUT'])]
+    #[Route('/api/admin/hours{id}', name: 'app_admin_hours_update', methods: ['PUT', 'OPTIONS'])]
     public function update(
         int $id,
         Request $request,
@@ -42,12 +42,5 @@ final class OpeningHourController extends AbstractController
         $em->flush();
 
         return $this->json(['message' => 'Horaires mis à jour avec succès !']);
-    }
-
-    #[Route('/api/hours', name: 'app_hours_public', methods: ['GET'])]
-    public function publicIndex(OpeningHourRepository $repository): JsonResponse
-    {
-        $hours = $repository->findAll();
-        return $this->json($hours, 200, [], ['groups' => 'main']);
     }
 }

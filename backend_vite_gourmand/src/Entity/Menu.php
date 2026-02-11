@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\MenuRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Attribute\Groups;
 
@@ -63,6 +65,18 @@ class Menu
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['main'])]
     private ?string $image_url = null;
+
+    #[ORM\ManyToMany(targetEntity: Plat::class)]
+    #[ORM\JoinTable(name: "menu_plats")]
+    #[ORM\JoinColumn(name: "menu_id", referencedColumnName: "menu_id")]
+    #[ORM\InverseJoinColumn(name: "plat_id", referencedColumnName: "plat_id")]
+    #[Groups(['main'])]
+    private Collection $plats;
+
+    public function __construct()
+    {
+        $this->plats = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -151,4 +165,28 @@ class Menu
         $this->image_url = $image_url;
         return $this;
     }
+
+    /**
+     * @return Collection<int, Plat>
+     */
+    public function getPlats(): Collection
+    {
+        return $this->plats;
+    }
+
+    public function addPlat(Plat $plat): static
+    {
+        if (!$this->plats->contains($plat)) {
+            $this->plats->add($plat);
+        }
+        return $this;
+    }
+
+    public function removePlat(Plat $plat): static
+    {
+        $this->plats->removeElement($plat);
+
+        return $this;
+    }
+
 }

@@ -1,143 +1,139 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import Navbar from '../../partials/Navbar';
-import { logout, fetchAdminAvis, validateAvis, deleteAvis } from '../../services/api';
+import { fetchAdminAvis, validateAvis, deleteAvis } from '../../services/api';
 import AdminHoraires from './AdminHoraires';
+import AdminMenus from './AdminMenus';
+import AdminNavbar from '../../partials/AdminNavbar';
+import AdminOrders from '../admin/AdminOrders';
 
 const AdminDashboard: React.FC = () => {
-    const navigate = useNavigate();
-    const [avis, setAvis] = useState([]);
-    const [menus, setMenus] = useState<any[]>([]);
+    const [avis, setAvis] = useState<any[]>([]);
+    const [activeTab, setActiveTab] = useState('all'); 
     
-    // 1. Récupération des infos utilisateur
+    // 1. RÉCUPÉRATION ET NETTOYAGE RADICAL
     const userJson = localStorage.getItem('user');
-    const user = userJson ? JSON.parse(userJson) : null;
     
-    const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+    const cleanData = (data: any): any => {
+        if (typeof data === 'string') {
+            const cleaned = data.replace(/^"|"$/g, '').replace(/\\"/g, '"');
+            try { 
+                const parsed = JSON.parse(cleaned);
+                return typeof parsed === 'string' ? JSON.parse(parsed) : parsed;
+            } catch { return cleaned; }
+        }
+        return data;
+    };
 
-    const displayName = isAdmin ? "José" : "Julie";
+    const userData = cleanData(userJson);
+    const userObj = userData?.user;
+    
+    const isAdmin = Array.isArray(userObj?.roles) ? userObj.roles.includes('ROLE_ADMIN') : false;
+    const userEmail = typeof userObj?.email === 'string' ? userObj.email.replace(/"/g, '') : "Julie";
 
-    const canManage = isAdmin || user?.roles?.includes('ROLE_EMPLOYE') || user?.roles?.includes('ROLE_USER');
-
-    // 2. Chargement des données
+    // 2. CHARGEMENT DES DONNÉES
     useEffect(() => {
         const loadData = async () => {
             try {
-                const avisData = await fetchAdminAvis();
-                setAvis(avisData);
-
-                const menusRes = await fetch('http://localhost:8000/api/admin/menus');
-                const menusData = await menusRes.json();
-                setMenus(menusData);
+                const response = await fetchAdminAvis();
+                const data = response?.['hydra:member'] || response || [];
+                setAvis(Array.isArray(data) ? data : []);
             } catch (error) {
-                console.error("Erreur chargement données", error);
+                console.error("Erreur chargement avis:", error);
             }
         };
         loadData();
     }, []);
 
+    // 3. FONCTIONS D'ACTIONS (Elles manquaient !)
     const handleValidate = async (id: number) => {
-        await validateAvis(id);
-        setAvis(avis.filter((a: any) => a.id !== id));
+        try {
+            await validateAvis(id);
+            setAvis(prev => prev.filter(a => a.id !== id));
+        } catch (err) { alert("Erreur validation"); }
     };
 
     const handleDelete = async (id: number) => {
-        await deleteAvis(id);
-        setAvis(avis.filter((a: any) => a.id !== id));
+        try {
+            await deleteAvis(id);
+            setAvis(prev => prev.filter(a => a.id !== id));
+        } catch (err) { alert("Erreur suppression"); }
     };
 
+    // 4. LOGIQUE D'AFFICHAGE
+    const shouldShow = (tabName: string) => activeTab === 'all' || activeTab === tabName;
+    
+    if (!userData) return <div className="p-20 text-center text-gray-500 font-bold">Session expirée. Veuillez vous reconnecter.</div>;
+
     return (
-        <div className="min-h-screen bg-gray-100 font-sans">
-            <Navbar />
+        <div className="min-h-screen bg-gray-100 font-sans pb-20">
+            <AdminNavbar activeTab={activeTab} onTabChange={setActiveTab} />
+            
             <div className="max-w-7xl mx-auto p-8">
-                <div className="flex justify-between items-center mb-8">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 italic">
-                            Espace {isAdmin ? 'Direction' : 'Administration'} - {displayName}
-                        </h1>
-                        <p className="text-gray-500">
-                            {isAdmin 
-                                ? "Gestion complète : menus, horaires et avis." 
-                                : "Bienvenue. Voici les avis à modérer et les commandes."}
-                        </p>
-                    </div>
+                <header className="mb-12">
+                    <h1 className="text-3xl font-bold text-gray-900 italic">
+                        Espace {isAdmin ? 'Direction' : 'Administration'} - {userEmail}
+                    </h1>
+                    <p className="text-gray-500">Vue d'ensemble de l'établissement</p>
+                </header>
 
-                    <button 
-                        onClick={logout} 
-                        className="flex items-center gap-2 bg-white text-red-600 px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-red-50 transition border border-red-100"
-                    >
-                        <span>Déconnexion</span>
-                    </button>
-                </div>
-
-                {/* --- NAVIGATION --- */}
-                {canManage && (
-                    <div className="flex flex-wrap gap-4 mb-8">
-                        <button className="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-orange-600 border border-orange-200">
-                            Modération Avis
-                        </button>
-                        <button className="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-gray-600 hover:text-orange-600 transition border border-transparent">
-                            Gestion des Menus
-                        </button>
-                        <button className="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-gray-600 hover:text-orange-600 transition border border-transparent">
-                            Gestion des Horaires
-                        </button>
-                        <Link to="/admin/commandes" className="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-gray-600 hover:text-orange-600 transition flex items-center border border-transparent">
-                            <span className="mr-2">📦</span>
-                            Gestion des Commandes
-                        </Link>
-                    </div>
-                )}
-
-                {/* --- TABLEAU DES AVIS --- */}
-                <div className="bg-white p-6 rounded-xl shadow-sm">
-                    <h2 className="text-xl font-bold mb-4 text-gray-800">Avis en attente</h2>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead>
-                                <tr className="border-b border-gray-100 text-gray-400 text-sm uppercase">
-                                    <th className="px-6 py-4">Client</th>
-                                    <th className="px-6 py-4">Message</th>
-                                    <th className="px-6 py-4 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                                {avis.map((item: any) => (
-                                    <tr key={item.id}>
-                                        <td className="py-4 px-6 font-semibold">{item.nom}</td>
-                                        <td className="py-4 px-6 text-gray-600 italic">{item.message}</td>
-                                        <td className="py-4 px-6 text-right">
-                                            <button onClick={() => handleValidate(item.id)} className="text-green-600 font-bold mr-4 hover:underline">Approuver</button>
-                                            <button onClick={() => handleDelete(item.id)} className="text-red-600 font-bold hover:underline">Supprimer</button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {/* --- TABLEAU DES MENUS --- */}
-                <div className="bg-white p-6 rounded-xl shadow-sm mt-8">
-                    <h2 className="text-xl font-bold mb-4 text-gray-800">Menus</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {menus.map((menu: any) => (
-                            <div key={menu.id} className="p-4 border border-gray-50 rounded-lg bg-gray-50">
-                                <h3 className="font-bold text-orange-600">{menu.titre_menu}</h3>
-                                <p className="text-xs text-gray-500 mb-2">{menu.description_menu}</p>
-                                <div className="flex justify-between mt-2 font-bold text-sm">
-                                    <span>{menu.prix_menu}€</span>
-                                    <span className={menu.quantite_restante < 5 ? 'text-red-500' : 'text-gray-400'}>
-                                        Stock: {menu.quantite_restante}
-                                    </span>
-                                </div>
+                <div className="flex flex-col gap-12">
+                    {/* --- 1. MODÉRATION DES AVIS --- */}
+                    {shouldShow('avis') && (
+                        <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h2 className="text-xl font-bold mb-6 text-orange-600 flex items-center gap-2">
+                                💬 Avis en attente
+                            </h2>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left">
+                                    <thead>
+                                        <tr className="border-b text-gray-400 text-xs uppercase">
+                                            <th className="px-6 py-4">Client</th>
+                                            <th className="px-6 py-4">Message</th>
+                                            <th className="px-6 py-4 text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y">
+                                        {avis.map((item: any) => (
+                                            <tr key={item.id}>
+                                                <td className="py-4 px-6 font-semibold">{item.nom}</td>
+                                                <td className="py-4 px-6 text-gray-600 italic">"{item.message}"</td>
+                                                <td className="py-4 px-6 text-right">
+                                                    <button onClick={() => handleValidate(item.id)} className="text-green-600 font-bold mr-4 hover:underline">Approuver</button>
+                                                    <button onClick={() => handleDelete(item.id)} className="text-red-500 hover:underline">Supprimer</button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {avis.length === 0 && (
+                                            <tr><td colSpan={3} className="py-8 text-center text-gray-400 font-medium italic">Aucun avis à modérer.</td></tr>
+                                        )}
+                                    </tbody>
+                                </table>
                             </div>
-                        ))}
-                    </div>
-                </div>
+                        </section>
+                    )}
 
-                <AdminHoraires />
+                    {/* --- 2. GESTION DES MENUS --- */}
+                    {shouldShow('menus') && (
+                        <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h2 className="text-xl font-bold mb-6 text-orange-600 flex items-center gap-2">🍴 Gestion de la Carte</h2>
+                            <AdminMenus />
+                        </section>
+                    )}
+
+                    {/* --- 3. GESTION DES HORAIRES --- */}
+                    {shouldShow('horaires') && (
+                        <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h2 className="text-xl font-bold mb-6 text-orange-600 flex items-center gap-2">🕒 Horaires d'ouverture</h2>
+                            <AdminHoraires />
+                        </section>
+                    )}
+
+                    {/* --- 4. GESTION DES COMMANDES --- */}
+                    {shouldShow('commandes') && (
+                        <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <AdminOrders />
+                        </section>
+                    )}
+                </div>
             </div>
         </div>
     );

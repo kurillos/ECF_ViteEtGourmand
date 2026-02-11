@@ -2,22 +2,26 @@
 
 namespace App\Entity;
 
-use App\Repository\PlatRepository; // Vérifie que le nom du repo est correct
+use App\Repository\PlatRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PlatRepository::class)]
 class Plat
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: "plat_id")] // Conforme MCD
+    #[ORM\Column(name: "plat_id")]
+    #[Groups(['main'])]
     private ?int $id = null;
 
-    #[ORM\Column(name: "titre_plat", length: 50)] // Conforme MCD
+    #[ORM\Column(name: "titre_plat", length: 50)]
+    #[Groups(['main'])]
     private ?string $titre_plat = null;
 
-    #[ORM\Column(type: Types::BLOB, nullable: true)] // Conforme MCD
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['main'])]
     private $photo = null;
 
     public function getId(): ?int

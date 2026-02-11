@@ -7,23 +7,38 @@ import Contact from './components/Contact';
 import AdminOrders from './pages/admin/AdminOrders';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminMenus from './pages/admin/AdminMenus';
 
 function App () {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/admin/commandes" element={ 
-          <ProtectedRoute allowedRoles={['ROLE_ADMIN', 'ROLE_USER', 'ROLE_EMPLOYE']}>
-            <AdminOrders />
-          </ProtectedRoute>
-        } 
-      />
-      </Routes>
-    </Router>
+  <Routes>
+    <Route path="/" element={<Home />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/contact" element={<Contact />} />
+    
+    {/* Page principale du Dashboard */}
+    <Route path="/admin" element={
+      <ProtectedRoute allowedRoles={['ROLE_ADMIN', 'ROLE_EMPLOYE']}>
+        <AdminDashboard />
+      </ProtectedRoute>
+    } />
+
+    {/* Page dédiée aux Commandes */}
+    <Route path="/admin/commandes" element={ 
+      <ProtectedRoute allowedRoles={['ROLE_ADMIN', 'ROLE_EMPLOYE']}>
+        <AdminOrders />
+      </ProtectedRoute>
+    } />
+
+    {/* Page dédiée aux Menus */}
+    <Route path="/admin/menus" element={ 
+      <ProtectedRoute allowedRoles={['ROLE_ADMIN', 'ROLE_EMPLOYE']}>
+        <AdminMenus />
+      </ProtectedRoute>
+    } />
+  </Routes>
+</Router>
   );
 }
 

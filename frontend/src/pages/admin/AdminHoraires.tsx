@@ -4,36 +4,62 @@ const AdminHoraires: React.FC = () => {
     const [hours, setHours] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const fetchWithAuth = async (url: string, options: any = {}) => {
+        const userJson = localStorage.getItem('user');
+        if (!userJson) return fetch(url, options);
+
+        try {
+            let user = JSON.parse(userJson);
+            if (typeof user === 'string') user = JSON.parse(user);
+            const token = user?.token?.replace(/[\\"]/g, '');
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                ...options.headers
+            };
+            return fetch(url, { ...options, headers });
+        } catch (e) {
+            return fetch(url, options);
+        }
+    };
+
     useEffect(() => {
-        fetch('http://localhost:8000/api/admin/hours')
+        fetchWithAuth('http://localhost:8000/api/admin/hours')
             .then(res => res.json())
             .then(data => {
-                setHours(data);
+                // ✅ SÉCURITÉ : Extrait le tableau Hydra ou JSON brut
+                const finalData = data['hydra:member'] || data;
+                setHours(Array.isArray(finalData) ? finalData : []);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error("Erreur chargement horaires:", err);
+                setHours([]);
                 setLoading(false);
             });
     }, []);
 
-    const handleChange = (id: number, field: string, value: any) => {
-        setHours(hours.map(h => h.id === id ? { ...h, [field]: value } : h));
-    };
-
     const handleSave = async (hour: any) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/admin/hours/${hour.id}`, {
+            const response = await fetchWithAuth(`http://localhost:8000/api/admin/hours/${hour.id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(hour)
             });
-            if (response.ok) alert(`Horaires du ${hour.day} mis à jour !`);
+            if (response.ok) alert("Sauvegardé !");
         } catch (error) {
-            alert("Erreur lors de la sauvegarde");
+            console.error("Erreur réseau:", error);
         }
     };
 
-    if (loading) return <p>Chargement des horaires...</p>;
+    const handleChange = (id: number, field: string, value: any) => {
+        setHours(prev => prev.map(h => h.id === id ? { ...h, [field]: value } : h));
+    };
+
+    if (loading) return <p className="p-8 text-center text-gray-500 italic">Chargement des horaires...</p>;
 
     return (
-        <div className="bg-white p-6 rounded-xl shadow-sm mt-8">
+        <div className="bg-white p-6 rounded-xl shadow-sm mt-8 border border-gray-100">
             <h2 className="text-xl font-bold mb-6 text-gray-800 border-b pb-2">Gestion des Horaires</h2>
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -47,31 +73,21 @@ const AdminHoraires: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {hours.map((h) => (
-                            <tr key={h.id} className="border-b last:border-0 hover:bg-gray-50">
-                                <td className="py-4 px-2 font-bold text-gray-700">{h.day}</td>
-                                <td className="py-4 px-2">
-                                    <div className="flex gap-1">
-                                        <input type="text" value={h.openAM} onChange={e => handleChange(h.id, 'openAM', e.target.value)} className="w-16 border rounded p-1 text-sm" />
-                                        <input type="text" value={h.closeAM} onChange={e => handleChange(h.id, 'closeAM', e.target.value)} className="w-16 border rounded p-1 text-sm" />
-                                    </div>
-                                </td>
-                                <td className="py-4 px-2">
-                                    <div className="flex gap-1">
-                                        <input type="text" value={h.openPM} onChange={e => handleChange(h.id, 'openPM', e.target.value)} className="w-16 border rounded p-1 text-sm" />
-                                        <input type="text" value={h.closePM} onChange={e => handleChange(h.id, 'closePM', e.target.value)} className="w-16 border rounded p-1 text-sm" />
-                                    </div>
-                                </td>
-                                <td className="py-4 px-2 text-center">
-                                    <input type="checkbox" checked={h.isClosed} onChange={e => handleChange(h.id, 'isClosed', e.target.checked)} />
-                                </td>
-                                <td className="py-4 px-2 text-right">
-                                    <button onClick={() => handleSave(h)} className="bg-orange-500 text-white px-4 py-1 rounded-lg text-xs font-bold hover:bg-orange-600 transition">
-                                        Sauver
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {/* ✅ SÉCURITÉ SUPPLÉMENTAIRE ICI */}
+                        {Array.isArray(hours) && hours.length > 0 ? (
+                            hours.map((h) => (
+                                <tr key={h.id} className="border-b last:border-0 hover:bg-gray-50">
+                                    <td className="py-4 px-2 font-bold text-gray-700">{h.day}</td>
+                                    {/* ... le reste de tes colonnes ... */}
+                                </tr>
+                            ))
+                        ) : (
+                                <tr>
+                                    <td colSpan={5} className="py-10 text-center text-gray-400 italic">
+                                        Aucun horaire disponible ou erreur de format API.
+                                    </td>
+                                </tr>
+                            )}
                     </tbody>
                 </table>
             </div>
