@@ -29,6 +29,7 @@ const AdminHoraires: React.FC = () => {
             .then(res => res.json())
             .then(data => {
                 // ✅ SÉCURITÉ : Extrait le tableau Hydra ou JSON brut
+                console.log("Données brutes reçues de l'API :", data);
                 const finalData = data['hydra:member'] || data;
                 setHours(Array.isArray(finalData) ? finalData : []);
                 setLoading(false);
@@ -72,23 +73,78 @@ const AdminHoraires: React.FC = () => {
                             <th className="py-3 px-2 text-right">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {/* ✅ SÉCURITÉ SUPPLÉMENTAIRE ICI */}
-                        {Array.isArray(hours) && hours.length > 0 ? (
-                            hours.map((h) => (
-                                <tr key={h.id} className="border-b last:border-0 hover:bg-gray-50">
-                                    <td className="py-4 px-2 font-bold text-gray-700">{h.day}</td>
-                                    {/* ... le reste de tes colonnes ... */}
-                                </tr>
-                            ))
-                        ) : (
+                        <tbody>
+                            {Array.isArray(hours) && hours.length > 0 ? (
+                                hours.map((h) => (
+                                    <tr key={h.id} className="border-b last:border-0 hover:bg-gray-50">
+                                        <td className="py-4 px-2 font-bold text-gray-700">{h.day}</td>
+                
+                                         {/* MATIN */}
+                                        <td className="py-4 px-2">
+                                            <div className="flex gap-1">
+                                                <input 
+                                                    type="text" 
+                                                    value={h.openAM || ''} 
+                                                    onChange={e => handleChange(h.id, 'openAM', e.target.value)}
+                                                    className="w-20 border rounded p-1 text-sm text-center"
+                                                />
+                                                <input 
+                                                    type="text" 
+                                                    value={h.closeAM || ''} 
+                                                    onChange={e => handleChange(h.id, 'closeAM', e.target.value)}
+                                                    className="w-20 border rounded p-1 text-sm text-center"
+                                                />
+                                            </div>
+                                        </td>
+
+                                        {/* SOIR */}
+                                        <td className="py-4 px-2">
+                                            <div className="flex gap-1">
+                                                <input 
+                                                    type="text" 
+                                                    value={h.openPM || ''} 
+                                                    onChange={e => handleChange(h.id, 'openPM', e.target.value)}
+                                                    className="w-20 border rounded p-1 text-sm text-center"
+                                                />
+                                                <input 
+                                                    type="text" 
+                                                    value={h.closePM || ''} 
+                                                    onChange={e => handleChange(h.id, 'closePM', e.target.value)}
+                                                    className="w-20 border rounded p-1 text-sm text-center"
+                                                />
+                                            </div>
+                                        </td>
+
+                                        {/* FERMÉ */}
+                                        <td className="py-4 px-2 text-center">
+                                            <input 
+                                                type="checkbox" 
+                                                checked={h.isClosed || false} 
+                                                onChange={e => handleChange(h.id, 'isClosed', e.target.checked)}
+                                                className="w-4 h-4 cursor-pointer"
+                                            />
+                                        </td>
+
+                                        {/* ACTION */}
+                                        <td className="py-4 px-2 text-right">
+                                            <button 
+                                                onClick={() => handleSave(h)} 
+                                                className="bg-orange-500 text-white px-4 py-1 rounded-lg text-xs font-bold hover:bg-orange-600 transition"
+                                            >
+                                               Sauver
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
                                 <tr>
                                     <td colSpan={5} className="py-10 text-center text-gray-400 italic">
                                         Aucun horaire disponible ou erreur de format API.
                                     </td>
                                 </tr>
                             )}
-                    </tbody>
+                            </tbody>
+                     
                 </table>
             </div>
         </div>

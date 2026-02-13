@@ -76,7 +76,7 @@ const AdminOrders: React.FC = () => {
                     <input 
                         type="text"
                         placeholder="Rechercher par email client..."
-                        className="flex-grow border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-orange-500"
+                        className="grow border rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-orange-500"
                         value={searchClient}
                         onChange={(e) => setSearchClient(e.target.value)}
                     />

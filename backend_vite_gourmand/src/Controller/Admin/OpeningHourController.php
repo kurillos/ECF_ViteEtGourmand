@@ -18,7 +18,7 @@ final class OpeningHourController extends AbstractController
       return $this->json($hours, 200, [], ['groups' => 'main']);
     }
 
-    #[Route('/api/admin/hours{id}', name: 'app_admin_hours_update', methods: ['PUT', 'OPTIONS'])]
+    #[Route('/api/admin/hours/{id}', name: 'app_admin_hours_update', methods: ['PUT', 'OPTIONS'])]
     public function update(
         int $id,
         Request $request,

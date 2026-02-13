@@ -95,19 +95,25 @@ const AdminMenus = () => {
                         className="border p-2 rounded"
                         onChange={(e) => setFormData({...formData, nb_personnes: parseInt(e.target.value)})}
                     />
+
                     <select 
-                        className="border p-2 rounded"
+                        className="border p-2 rounded w-full"
                         onChange={(e) => setFormData({...formData, theme_id: e.target.value})}
+                        value={formData.theme_id || ""}
                     >
                         <option value="">Choisir un thème</option>
-                        {themes.map(t => <option key={t.id} value={t.id}>{t.libelle}</option>)}
+                        {Array.isArray(themes) && themes.map((t: any) => (
+                            <option key={t.id} value={t.id}>
+                                {t.libelle}
+                            </option>
+                        ))}
                     </select>
                 </div>
 
                 <div className="mt-4">
                     <label className="block font-bold mb-2">Plats inclus :</label>
                     <div className="flex flex-wrap gap-4">
-                        {plats.map(plat => (
+                        {Array.isArray(plats) ? plats.map(plat => (
                             <label key={plat.id} className="flex items-center space-x-2">
                                 <input 
                                     type="checkbox" 
@@ -115,30 +121,32 @@ const AdminMenus = () => {
                                 />
                                 <span>{plat.titre_plat}</span>
                             </label>
-                        ))}
+                        )) : <p className="text-gray-400 italic">Chargement des plats...</p>}
                     </div>
                 </div>
 
-                <button type="submit" className="mt-6 bg-green-600 text-white px-4 py-2 rounded">
+                <button type="submit" className="mt-6 bg-green-600 text-white px-6 py-2 rounded font-bold hover:bg-green-700">
                     Enregistrer le Menu
                 </button>
             </form>
 
+            <h2 className="text-2xl font-bold mb-4">Menus existants</h2>
+
             {/* LISTE DES MENUS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {menus.map((menu: any) => (
+                {Array.isArray(menus) ? menus.map((menu: any) => (
                     <div key={menu.id} className="border p-4 rounded bg-gray-50 shadow">
                         <h3 className="font-bold">{menu.titre_menu} - {menu.prix_menu}€</h3>
                         <p className="text-sm text-gray-600">{menu.description_menu}</p>
                         <div className="mt-2">
-                            {menu.plats?.map((p: any) => (
+                            {Array.isArray(menu.plats) && menu.plats.map((p: any) => (
                                 <span key={p.id} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1">
                                     {p.titre_plat}
                                 </span>
                             ))}
                         </div>
                     </div>
-                ))}
+                )) : <p className="text-center py-4 text-gray-500">Aucun menu disponible ou erreur serveur.</p>}
             </div>
         </div>
     );

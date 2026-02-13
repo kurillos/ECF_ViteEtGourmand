@@ -159,6 +159,16 @@ export const menuService = {
     getAll: async () => {
         const response = await fetch(`${API_URL}/admin/menus`, { headers: getAuthHeaders() });
         return response.json();
+    },
+    // AJOUTER CECI :
+    create: async (data: any) => {
+        const response = await fetch(`${API_URL}/admin/menus`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) throw new Error('Erreur création menu');
+        return response.json();
     }
 };
 
@@ -166,12 +176,30 @@ export const platService = {
     getAll: async () => {
         const response = await fetch(`${API_URL}/admin/plats`, { headers: getAuthHeaders() });
         return response.json();
+    },
+    create: async (data: any) => {
+        const response = await fetch(`${API_URL}/admin/plats`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) throw new Error('Erreur création plat');
+        return response.json();
     }
 };
 
 export const themeService = {
     getAll: async () => {
         const response = await fetch(`${API_URL}/admin/themes`, { headers: getAuthHeaders() });
+        return response.json();
+    },
+    create: async (data: any) => {
+        const response = await fetch(`${API_URL}/admin/themes`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) throw new Error('Erreur création thème');
         return response.json();
     }
 };
