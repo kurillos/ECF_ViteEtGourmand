@@ -19,7 +19,7 @@ class Menu
     #[Groups(['main'])]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Theme::class)]
+    #[ORM\ManyToOne(inversedBy: 'menus')]
     #[ORM\JoinColumn(
     name: "theme_id",
     referencedColumnName: "theme_id",

@@ -13,6 +13,11 @@ class PublicMenuController extends AbstractController
     #[Route('/api/menus', name: 'app_menus_public', methods: ['GET'])]
     public function publicList(MenuRepository $menuRepo): JsonResponse
     {
-        return $this->json($menuRepo->findAll(), 200, [], ['groups' => 'main']);
+        return $this->json($menuRepo->findAll(), 200, [], [
+            'groups' => 'main',
+            'circular_reference_handler' => function ($object) {
+                return $object->getId();
+            }
+        ]);
     }
 }

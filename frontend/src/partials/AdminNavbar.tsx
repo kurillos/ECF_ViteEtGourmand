@@ -7,11 +7,6 @@ export interface AdminNavbarProps {
 }
 
 const AdminNavbar: React.FC<AdminNavbarProps> = ({ activeTab, onTabChange }) => {
-    console.log("--- DEBUG NAVBAR ---");
-    console.log("Valeur de activeTab :", activeTab);
-    console.log("Type de setActiveTab :", typeof onTabChange);
-    console.log("Contenu de setActiveTab :", onTabChange);
-    console.log("Onglet actif reçu par la Navbar :", activeTab);
     return (
         <nav className="bg-white shadow-sm border-b border-gray-100 mb-8">
             <div className="max-w-7xl mx-auto px-8 py-4 flex justify-between items-center">

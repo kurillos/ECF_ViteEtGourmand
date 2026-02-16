@@ -13,7 +13,7 @@ class Avis
     #[Groups(['avis'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(name: "avis_id")]
     private ?int $id = null;
 
     #[Groups(['avis'])]
@@ -23,7 +23,7 @@ class Avis
     private ?string $nom = null;
 
     #[Groups(['avis'])]
-    #[AssertNotBlank]
+    #[Assert\NotBlank]
     #[Assert\Length(min: 10, max: 500, minMessage: "Message trop court, il doit contenir au moins 10 caractères.")]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $message = null;

@@ -22,7 +22,7 @@ class Plat
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['main'])]
-    private $photo = null;
+    private ?string $photo = null;
 
     public function getId(): ?int
     {
@@ -40,7 +40,7 @@ class Plat
         return $this;
     }
 
-    public function getPhoto()
+    public function getPhoto(): ?string
     {
         return $this->photo;
     }

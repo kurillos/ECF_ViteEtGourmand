@@ -37,6 +37,26 @@ const getAuthHeaders = (): Record<string, string> => {
     return headers;
 };
 
+const handleResponse = async (response: Response) => {
+    if (response.status === 401) {
+        const data = await response.json().catch(() => ({}));
+
+        // On vérifie l'expiration du token
+        if (data.message === "Expired JWT Token" || data.message === "Invalid JWT Token") {
+            console.warn("Session expirée, déconnexion...");
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+            return;
+        }
+    }
+
+    if (!response.ok) {
+        throw new Error(`Erreur API: ${response.status}`);
+    }
+
+    return response.json();
+};
+
 
 // --- SECTION MENUS (PUBLIC) ---
 export const fetchAllMenus = async (): Promise<Menu[]> => {
@@ -108,7 +128,6 @@ export const login = async (credentials: { email: string; password: string }) =>
         token: data.token,
         user: {
             email: credentials.email,
-            // Optionnel : tu pourrais récupérer les vrais rôles ici si ton back les renvoie
             roles: data.roles || ['ROLE_EMPLOYE'] 
         }
     };
@@ -158,9 +177,9 @@ export const commandeService = {
 export const menuService = {
     getAll: async () => {
         const response = await fetch(`${API_URL}/admin/menus`, { headers: getAuthHeaders() });
-        return response.json();
+        return handleResponse(response);
     },
-    // AJOUTER CECI :
+    
     create: async (data: any) => {
         const response = await fetch(`${API_URL}/admin/menus`, {
             method: 'POST',
@@ -175,7 +194,7 @@ export const menuService = {
 export const platService = {
     getAll: async () => {
         const response = await fetch(`${API_URL}/admin/plats`, { headers: getAuthHeaders() });
-        return response.json();
+        return handleResponse(response);
     },
     create: async (data: any) => {
         const response = await fetch(`${API_URL}/admin/plats`, {
@@ -191,7 +210,7 @@ export const platService = {
 export const themeService = {
     getAll: async () => {
         const response = await fetch(`${API_URL}/admin/themes`, { headers: getAuthHeaders() });
-        return response.json();
+        return handleResponse(response);
     },
     create: async (data: any) => {
         const response = await fetch(`${API_URL}/admin/themes`, {

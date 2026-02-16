@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/admin/plats')]
@@ -18,7 +18,13 @@ class AdminPlatController extends AbstractController
     #[Route('', name: 'api_admin_plat_list', methods: ['GET'])]
     public function list(PlatRepository $repo): JsonResponse
     {
-        return $this->json($repo->findAll(), 200, [], ['groups' => 'main']);
+
+        return $this->json($repo->findAll(), 200, [], [
+            'groups' => 'main',
+            'circular_reference_handler' => function ($object) {
+                return $object->getId();
+            }
+        ]);
     }
 
     #[Route('', name: 'api_admin_plat_create', methods: ['POST'])]

@@ -21,6 +21,9 @@ class Theme
     #[Groups(['main'])]
     private ?string $libelle = null;
 
+    #[ORM\OneToMany(targetEntity: Menu::class, mappedBy: 'theme')]
+    private Collection $menus;
+
     public function __construct()
     {
         $this->menus = new ArrayCollection();
@@ -57,6 +60,15 @@ class Theme
             if ($menu->getTheme() === $this) {
                 $menu->setTheme(null);
             }
+        }
+        return $this;
+    }
+
+    public function addMenu(Menu $menu): static
+    {
+        if (!$this->menus->contains($menu)) {
+            $this->menus->add($menu);
+            $menu->setTheme($this);
         }
         return $this;
     }
