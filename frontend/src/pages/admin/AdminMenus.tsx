@@ -11,8 +11,16 @@ interface Theme {
     libelle: string;
 }
 
+interface Menu {
+    id: number;
+    titre_menu: string;
+    prix_menu: string;
+    description_menu: string;
+    plats?: Plat[];
+}
+
 const AdminMenus = () => {
-    const [menus, setMenus] = useState([]);
+    const [menus, setMenus] = useState<Menu[]>([]);
     const [plats, setPlats] = useState<Plat[]>([]);
     const [themes, setThemes] = useState<Theme[]>([]);
     
@@ -62,6 +70,18 @@ const AdminMenus = () => {
             loadInitialData();
         } catch (error) {
             alert("Erreur lors de la création");
+        }
+    };
+
+    const handleDelete = async (id: number) => {
+        if (window.confirm("Êtes-vous sûr de vouloir supprimer ce manu ?")) {
+            try {
+                await menuService.delete(id);
+
+                setMenus(menus.filter(m => m.id !== id));
+            } catch (error) {
+                console.error("Erreur suppression:", error);
+            }
         }
     };
 
@@ -145,6 +165,12 @@ const AdminMenus = () => {
                                 </span>
                             ))}
                         </div>
+                        <button
+                            onClick={() => handleDelete(menu.id)}
+                            className="text-red-600 hover:text-red-800 font-bold"
+                        >
+                            Supprimer
+                        </button>
                     </div>
                 )) : <p className="text-center py-4 text-gray-500">Aucun menu disponible ou erreur serveur.</p>}
             </div>

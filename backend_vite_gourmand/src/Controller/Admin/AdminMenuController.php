@@ -78,6 +78,7 @@ class AdminMenuController extends AbstractController
     {
         $em->remove($menu);
         $em->flush();
+        
         return $this->json(['message' => 'Menu supprimé avec succès']);
     }
 }

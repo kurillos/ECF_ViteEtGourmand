@@ -187,7 +187,15 @@ export const menuService = {
             body: JSON.stringify(data),
         });
         if (!response.ok) throw new Error('Erreur création menu');
-        return response.json();
+        return handleResponse(response);
+    },
+
+    delete: async (id: number) => {
+        const response = await fetch(`${API_URL}/admin/menus/${id}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders(),
+        });
+        return handleResponse(response);
     }
 };
 
