@@ -32,7 +32,6 @@ security:
         
         api:
             pattern: ^/api
-            security: true
             stateless: true
             jwt: ~
             

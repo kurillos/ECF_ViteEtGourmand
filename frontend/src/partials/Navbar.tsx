@@ -3,14 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  
-  // On récupère l'utilisateur stocké
   const userJson = localStorage.getItem('user');
   const user = userJson ? JSON.parse(userJson) : null;
 
   const handleLogout = () => {
-    localStorage.removeItem('user'); // On vide la session
-    navigate('/'); // Retour à l'accueil
+    localStorage.removeItem('user');
+    navigate('/');
   };
 
   return (
@@ -21,29 +19,34 @@ const Navbar: React.FC = () => {
           VITE <span className="text-orange-500">&</span> GOURMAND
         </Link>
 
-        {/* Liens (Desktop) */}
-        {/* Liens (Desktop) */}
+        {/* Liens principaux */}
         <ul className="hidden md:flex items-center space-x-8 font-semibold text-sm text-gray-600 list-none">
           <li>
             <Link to="/" className="hover:text-orange-500 transition-colors">Accueil</Link>
           </li>
           <li>
-            <a href="#menus" className="hover:text-orange-500 transition-colors">Nos Menus</a> 
+            <Link to="/menus" className="hover:text-orange-500 transition-colors">Menu</Link>
           </li>
           <li>
-            {/* Correction ici : suppression du "/" avant le ">" et ajout du contenu entre les balises */}
-            <Link to="/contact" className='hover:text-orange-500 font-bold text-orange-500 border border-orange-500 px-4 py-2 rounded-xl hover:bg-orange-500 hover:text-white transition'>
-              Contact
-            </Link>
+            <Link to="/contact" className="hover:text-orange-500 transition-colors">Contact</Link>
           </li>
           
+          {/* Inscription (visible uniquement si déconnecté) */}
+          {!user && (
+            <li>
+              <Link to="/register" className="hover:text-orange-500 transition-colors">Inscription</Link>
+            </li>
+          )}
+
+          {/* Lien Admin (si connecté) */}
           {user && (
             <li>
-              <Link to="/admin" className="text-orange-600 font-bold hover:underline">Admin</Link>
+              <Link to="/admin" className="text-orange-600 font-bold hover:underline">Espace Admin</Link>
             </li>
           )}
         </ul>
-        {/* Action (Dynamique) */}
+
+        {/* Action Connexion / Déconnexion */}
         <div className="flex items-center gap-4">
           {user ? (
             <button 

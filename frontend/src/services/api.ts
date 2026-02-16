@@ -175,8 +175,21 @@ export const commandeService = {
 
 // --- SECTION SERVICES ADMIN ---
 export const menuService = {
+    // . Pour l'affichage Menus
     getAll: async () => {
-        const response = await fetch(`${API_URL}/admin/menus`, { headers: getAuthHeaders() });
+        const response = await fetch(`${API_URL}/menus`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return handleResponse(response);
+    },
+
+    // 2. POUR L'ADMIN (Le tableau de bord de Julie)
+    getAllAdmin: async () => {
+        const response = await fetch(`${API_URL}/admin/menus`, {
+            method: 'GET',
+            headers: getAuthHeaders(),
+        });
         return handleResponse(response);
     },
     
@@ -203,6 +216,16 @@ export const menuService = {
             headers: getAuthHeaders(),
         });
         return handleResponse(response);
+    },
+    getById: async (id: number) => {
+        const response = await fetch(`${API_URL}/menus/${id}`);
+        const data = await response.json(); 
+    
+        if (!response.ok) {
+            throw new Error('Détail menu introuvable');
+        }
+    
+        return data;
     }
 };
 

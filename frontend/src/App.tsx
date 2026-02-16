@@ -8,6 +8,8 @@ import AdminOrders from './pages/admin/AdminOrders';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminMenus from './pages/admin/AdminMenus';
+import { MenuDetail } from './components/MenuDetail';
+import MenusPage from './pages/MenusPage';
 
 function App () {
   return (
@@ -16,6 +18,9 @@ function App () {
     <Route path="/" element={<Home />} />
     <Route path="/login" element={<Login />} />
     <Route path="/contact" element={<Contact />} />
+    <Route path="/menu/:id" element={<MenuDetail />} />
+    <Route path="/menus" element={<MenusPage />} />
+    {/* <Route path="/commander/:id" element={<Checkout />} /> */}
     
     {/* Page principale du Dashboard */}
     <Route path="/admin" element={
