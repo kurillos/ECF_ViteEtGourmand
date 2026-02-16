@@ -189,7 +189,14 @@ export const menuService = {
         if (!response.ok) throw new Error('Erreur création menu');
         return handleResponse(response);
     },
-
+    update: async (id: number, data: any) => {
+        const response = await fetch(`${API_URL}/admin/menus/${id}`, {
+            method: 'PUT', // Route PUT côté Symfony
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data),
+        });
+        return handleResponse(response);
+    },
     delete: async (id: number) => {
         const response = await fetch(`${API_URL}/admin/menus/${id}`, {
             method: 'DELETE',
@@ -211,7 +218,14 @@ export const platService = {
             body: JSON.stringify(data),
         });
         if (!response.ok) throw new Error('Erreur création plat');
-        return response.json();
+        return handleResponse(response);
+    },
+    delete: async (id: number) => {
+        const response = await fetch(`${API_URL}/admin/plats/${id}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders(),
+        });
+        return handleResponse(response);
     }
 };
 

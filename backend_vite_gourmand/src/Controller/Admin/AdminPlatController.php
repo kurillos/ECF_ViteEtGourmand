@@ -42,4 +42,16 @@ class AdminPlatController extends AbstractController
 
         return $this->json($plat, 201, [], ['groups' => 'main']);
     }
+
+    #[Route('/api/admin/plats/{id}', name: 'api_admin_plat_delete', methods: ['DELETE'])]
+    public function delete(int $id, PlatRepository $repo, EntityManagerInterface $em): JsonReponse
+    {
+        $plat = $repo->find($id);
+        if (!$plat) return $this->json(['message' => 'Plat non trouvé'], 404);
+
+        $em->remove($plat);
+        $em->flush();
+
+        return $this->json(['message' => 'Plat supprimé']);
+    }
 }

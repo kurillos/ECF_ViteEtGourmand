@@ -66,6 +66,14 @@ class Menu
     #[Groups(['main'])]
     private ?string $image_url = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['main'])]
+    private ?string $allergenes = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['main'])]
+    private ?string $conditions = null;
+
     #[ORM\ManyToMany(targetEntity: Plat::class)]
     #[ORM\JoinTable(name: "menu_plats")]
     #[ORM\JoinColumn(name: "menu_id", referencedColumnName: "menu_id")]
@@ -187,6 +195,40 @@ class Menu
         $this->plats->removeElement($plat);
 
         return $this;
+    }
+
+    public function setRegime(?string $regime): self
+    {
+        $this->regime = $regime;
+
+        return $this;
+    }
+
+    public function getAllergenes(): ?string 
+    { 
+        return $this->allergenes; 
+    
+    }
+    
+    public function setAllergenes(?string $allergenes): self 
+    { 
+        $this->allergenes = $allergenes; 
+        
+        return $this; 
+    }
+
+    public function getConditions(): ?string 
+    { 
+        return $this->conditions; 
+    
+    }
+
+    public function setConditions(?string $conditions): self 
+    { 
+        $this->conditions = $conditions; 
+        
+        return $this; 
+    
     }
 
 }

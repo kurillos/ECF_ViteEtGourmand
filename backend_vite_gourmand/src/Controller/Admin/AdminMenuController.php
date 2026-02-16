@@ -78,7 +78,49 @@ class AdminMenuController extends AbstractController
     {
         $em->remove($menu);
         $em->flush();
-        
+
         return $this->json(['message' => 'Menu supprimé avec succès']);
     }
+
+    #[Route('/{id}', name: 'api_admin_menu_update', methods: ['PUT'])]
+public function update(
+    int $id, 
+    Request $request, 
+    MenuRepository $repository, 
+    ThemeRepository $themeRepo, 
+    EntityManagerInterface $em
+): JsonResponse {
+    $menu = $repository->find($id);
+    if (!$menu) return $this->json(['message' => 'Menu non trouvé'], 404);
+
+    $data = json_decode($request->getContent(), true);
+    if (!$data) return $this->json(['message' => 'JSON invalide'], 400);
+
+    if (isset($data['titre_menu'])) $menu->setTitreMenu($data['titre_menu']);
+    if (isset($data['description_menu'])) $menu->setDescriptionMenu($data['description_menu']);
+    
+    if (isset($data['prix_menu'])) $menu->setPrixMenu((string)$data['prix_menu']);
+    
+    if (isset($data['nb_personnes'])) $menu->setNbPersonnes((int)$data['nb_personnes']);
+    if (isset($data['quantite_restante'])) $menu->setQuantiteRestante((int)$data['quantite_restante']);
+    
+    if (isset($data['regime'])) $menu->setRegime($data['regime']);
+    if (isset($data['image_url'])) $menu->setImageUrl($data['image_url']);
+    
+    if (isset($data['allergenes'])) $menu->setAllergenes($data['allergenes']);
+    if (isset($data['conditions'])) $menu->setConditions($data['conditions']);
+
+    if (isset($data['theme_id'])) {
+        $theme = $themeRepo->find($data['theme_id']);
+        if ($theme) $menu->setTheme($theme);
+    }
+
+    try {
+        $em->flush();
+    } catch (\Exception $e) {
+        return $this->json(['message' => $e->getMessage()], 500);
+    }
+
+    return $this->json($menu, 200, [], ['groups' => 'main']);
+}
 }
