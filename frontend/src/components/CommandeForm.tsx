@@ -9,7 +9,7 @@ const CommandeForm = () => {
     // 1. Récupération complète des infos client
     const userString = localStorage.getItem('user');
     const authData = userString ? JSON.parse(userString) : null;
-    const client = authData?.user || {}; 
+    const client = authData?.user?.user || authData?.user || {};
 
     const [menu, setMenu] = useState<any>(null);
     const [nbPers, setNbPers] = useState(4);
@@ -34,12 +34,16 @@ const CommandeForm = () => {
     const prixBase = menu.prix_menu * nbPers;
     
     // Réduction 10% si nbPers >= (min + 5)
-    const reductionActive = nbPers >= (menu.nb_personnes + 5);
-    const remise = reductionActive ? prixBase * 0.1 : 0;
+    const seuilRemise = menu.nb_personnes + 5;
+    const reductionActive = nbPers >= seuilRemise;
+    const remise = reductionActive ? (menu.prix_menu * nbPers) * 0.1 : 0;
     
     // Livraison (Bordeaux gratuit, sinon 5€ + 0.59€/km)
     const isBordeaux = formData.ville.toLowerCase() === 'bordeaux';
-    const fraisLivraison = isBordeaux ? 0 : 5 + (15 * 0.59);
+    const distanceTest = 10;
+    const fraisLivraison = formData.ville.toLowerCase() === 'bordeaux' 
+    ? 0  // Si c'est bordeaux, c'est 0
+    : 5 + (distanceTest * 0.59); // Sinon c'est 5€ + (km * 0.59)
     
     const total = prixBase - remise + fraisLivraison;
 
@@ -88,12 +92,34 @@ const CommandeForm = () => {
                 </div>
 
                 {/* Récapitulatif Julie */}
-                <div className="p-6 bg-orange-50 rounded-[2rem] border border-orange-100 space-y-3">
-                    <div className="flex justify-between font-medium"><span>Prestation ({nbPers} pers.)</span><span>{prixBase.toFixed(2)}€</span></div>
-                    {reductionActive && <div className="flex justify-between text-green-600 font-bold"><span>Remise fidélité (10%)</span><span>-{remise.toFixed(2)}€</span></div>}
-                    <div className="flex justify-between font-medium"><span>Frais de livraison ({formData.ville})</span><span>{fraisLivraison.toFixed(2)}€</span></div>
-                    <div className="flex justify-between text-2xl font-black border-t border-orange-200 pt-4"><span>TOTAL</span><span className="text-orange-600">{total.toFixed(2)}€</span></div>
-                </div>
+<div className="p-6 bg-orange-50 rounded-[2rem] border border-orange-100 space-y-3">
+    <div className="flex justify-between font-medium">
+        <span>Prestation ({nbPers} pers.)</span>
+        <span>{prixBase.toFixed(2)}€</span>
+    </div>
+
+    {/* Affichage de la remise en rouge si elle est active */}
+    {reductionActive ? (
+        <div className="flex justify-between text-red-600 font-bold bg-red-50 p-2 rounded-lg border border-red-100">
+            <span>Remise fidélité (-10%)</span>
+            <span>-{remise.toFixed(2)}€</span>
+        </div>
+    ) : (
+        <p className="text-[10px] text-gray-400 italic">
+            * Ajoutez {seuilRemise - nbPers} personnes pour bénéficier de -10%
+        </p>
+    )}
+
+    <div className="flex justify-between font-medium">
+        <span>Frais de livraison ({formData.ville})</span>
+        <span>{fraisLivraison.toFixed(2)}€</span>
+    </div>
+    
+    <div className="flex justify-between text-2xl font-black border-t border-orange-200 pt-4">
+        <span>TOTAL</span>
+        <span className="text-orange-600">{total.toFixed(2)}€</span>
+    </div>
+</div>
 
                 <button className="w-full bg-orange-500 text-white py-5 rounded-2xl font-black text-xl shadow-lg hover:bg-orange-600 transition-all transform hover:-translate-y-1">
                     VALIDER ET PAYER {total.toFixed(2)}€
