@@ -10,6 +10,8 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminMenus from './pages/admin/AdminMenus';
 import { MenuDetail } from './components/MenuDetail';
 import MenusPage from './pages/MenusPage';
+import Register from './pages/Register';
+import CommandeForm from './components/CommandeForm';
 
 function App () {
   return (
@@ -21,6 +23,8 @@ function App () {
     <Route path="/menu/:id" element={<MenuDetail />} />
     <Route path="/menus" element={<MenusPage />} />
     {/* <Route path="/commander/:id" element={<Checkout />} /> */}
+    <Route path="/register" element={<Register />} />
+    <Route path="/commande/:id" element={<CommandeForm />} />
     
     {/* Page principale du Dashboard */}
     <Route path="/admin" element={

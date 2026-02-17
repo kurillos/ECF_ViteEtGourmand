@@ -12,6 +12,7 @@ export const MenuDetail = () => {
         const fetchDetail = async () => {
             try {
                 if (id) {
+                    // On récupère les données via l'API
                     const data = await menuService.getById(parseInt(id));
                     setMenu(data);
                 }
@@ -24,18 +25,31 @@ export const MenuDetail = () => {
         fetchDetail();
     }, [id]);
 
+    const handleOrder = () => {
+    const userString = localStorage.getItem('user');
+    const authData = userString ? JSON.parse(userString) : null;
+
+    if (authData?.token) {
+        const menuId = menu?.menu_id || menu?.id || id;
+        navigate(`/commande/${menuId}`); 
+    } else {
+        navigate('/register');
+        }
+    };
+
     if (loading) return <div className="p-10 text-center text-orange-500 font-bold">Chargement des saveurs...</div>;
-    if (!menu) return <div className="p-10 text-center">Menu introuvable.</div>;
+    if (!menu) return <div className="p-10 text-center">Menu introuvable (ID: {id}).</div>;
 
     return (
         <div className="max-w-5xl mx-auto p-6 bg-white shadow-2xl rounded-3xl mt-10 mb-10 border border-gray-100">
             <div className="grid md:grid-cols-2 gap-10">
-                {/* Galerie d'image */}
+                {/* Galerie d'image corrigée avec le port du backend */}
                 <div className="relative group">
                     <img 
-                        src={menu.image_url} 
+                        src={`http://localhost:8000${menu.image_url}`} 
                         alt={menu.titre_menu} 
                         className="rounded-2xl shadow-lg object-cover w-full h-[450px] transition-transform duration-500 group-hover:scale-[1.02]" 
+                        onError={(e) => { e.currentTarget.src = "https://via.placeholder.com/450?text=Vite+Et+Gourmand"; }}
                     />
                     <div className="absolute top-4 left-4 bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-md">
                         {menu.theme?.libelle || 'Menu'}
@@ -43,7 +57,6 @@ export const MenuDetail = () => {
                 </div>
                 
                 <div className="flex flex-col justify-center space-y-6">
-                    {/* TITRE EN ORANGE / GRIS FONCÉ */}
                     <h1 className="text-4xl font-black text-gray-800 tracking-tight">
                         {menu.titre_menu}
                     </h1>
@@ -70,10 +83,9 @@ export const MenuDetail = () => {
                         </p>
                     </div>
 
-                    {/* BOUTON EN ORANGE */}
                     <button 
-                        onClick={() => navigate('/register')}
-                        className="w-full bg-orange-500 text-white py-4 rounded-2xl font-black text-xl shadow-lg hover:bg-orange-600 hover:shadow-orange-200 transition-all active:scale-95"
+                        onClick={handleOrder}
+                        className="w-full bg-orange-500 text-white py-4 rounded-2xl font-black text-xl shadow-lg hover:bg-orange-600 transition-all active:scale-95"
                     >
                         COMMANDER MAINTENANT
                     </button>
@@ -87,7 +99,7 @@ export const MenuDetail = () => {
                     </h3>
                     <div className="space-y-3">
                         {menu.plats?.map((p: any) => (
-                            <div key={p.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-transparent hover:border-orange-200 transition-colors">
+                            <div key={p.plat_id || p.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-transparent hover:border-orange-200 transition-colors">
                                 <span className="text-orange-500">✔</span>
                                 <span className="font-semibold text-gray-700">{p.titre_plat}</span>
                             </div>

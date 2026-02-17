@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -41,6 +44,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     
     #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $nom = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $prenom = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $telephone = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $adresse_postale = null;
+
+    /**
+     * @var Collection<int, Commande>
+     */
+    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'user')]
+    private Collection $menu;
+
+    public function __construct()
+    {
+        $this->menu = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -122,5 +148,83 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // @deprecated, to be removed when upgrading to Symfony 8
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(string $prenom): static
+    {
+        $this->prenom = $prenom;
+
+        return $this;
+    }
+
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(string $telephone): static
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function getAdressePostale(): ?string
+    {
+        return $this->adresse_postale;
+    }
+
+    public function setAdressePostale(string $adresse_postale): static
+    {
+        $this->adresse_postale = $adresse_postale;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getMenu(): Collection
+    {
+        return $this->menu;
+    }
+
+    public function addMenu(Commande $menu): static
+    {
+        if (!$this->menu->contains($menu)) {
+            $this->menu->add($menu);
+            $menu->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMenu(Commande $menu): static
+    {
+        if ($this->menu->removeElement($menu)) {
+            // set the owning side to null (unless already changed)
+            if ($menu->getUser() === $this) {
+                $menu->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -3,11 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\CommandeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 class Commande
@@ -20,108 +18,80 @@ class Commande
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['commande:read'])]
-    private ?\DateTimeInterface $date_commande = null;
+    private ?\DateTimeInterface $dateCommande = null;
 
-    /**
-     * Statuts possibles : accepté, en préparation, en cours de livraison, 
-     * livré, en attente du retour de matériel, terminée
-     */
     #[ORM\Column(length: 50)]
     #[Groups(['commande:read'])]
     private ?string $statut = 'accepté';
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Groups(['commande:read'])]
-    private ?string $total = null;
+    private ?\DateTimeInterface $datePrestation = null;
+
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Groups(['commande:read'])]
+    private ?\DateTimeInterface $heureLivraison = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['commande:read'])]
+    private ?string $lieuLivraison = null;
 
     #[ORM\Column]
     #[Groups(['commande:read'])]
-    private ?bool $a_pret_materiel = false;
+    private ?int $nombrePersonnes = null;
 
-    // Contraintes du cahier des charges pour modification/annulation
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column]
     #[Groups(['commande:read'])]
-    private ?string $motif_modification = null;
+    private ?float $fraisLivraison = null;
 
-    #[ORM\Column(length: 50, nullable: true)]
+    #[ORM\Column]
     #[Groups(['commande:read'])]
-    private ?string $mode_contact_motif = null; // "Appel GSM" ou "Mail"
+    private ?float $totalTTC = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['commande:read'])]
     private ?User $client = null;
 
-    #[ORM\OneToMany(mappedBy: 'commande', targetEntity: LigneCommande::class, cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Menu::class)]
+    #[ORM\JoinColumn(nullable: false)]
     #[Groups(['commande:read'])]
-    private Collection $lignes;
+    private ?Menu $menu = null;
 
     public function __construct()
     {
-        $this->date_commande = new \DateTime();
-        $this->lignes = new ArrayCollection();
+        $this->dateCommande = new \DateTime();
     }
 
     public function getId(): ?int { return $this->id; }
 
-    public function getDateCommande(): ?\DateTimeInterface { return $this->date_commande; }
-
-    public function setDateCommande(\DateTimeInterface $date_commande): static { 
-        $this->date_commande = $date_commande; 
-        return $this; 
-    }
+    public function getDateCommande(): ?\DateTimeInterface { return $this->dateCommande; }
+    public function setDateCommande(\DateTimeInterface $dateCommande): self { $this->dateCommande = $dateCommande; return $this; }
 
     public function getStatut(): ?string { return $this->statut; }
+    public function setStatut(string $statut): self { $this->statut = $statut; return $this; }
 
-    public function setStatut(string $statut): static { 
-        $this->statut = $statut; 
-        return $this; 
-    }
+    public function getDatePrestation(): ?\DateTimeInterface { return $this->datePrestation; }
+    public function setDatePrestation(\DateTimeInterface $datePrestation): self { $this->datePrestation = $datePrestation; return $this; }
 
-    public function getTotal(): ?string { return $this->total; }
+    public function getHeureLivraison(): ?\DateTimeInterface { return $this->heureLivraison; }
+    public function setHeureLivraison(\DateTimeInterface $heureLivraison): self { $this->heureLivraison = $heureLivraison; return $this; }
 
-    public function setTotal(string $total): static { 
-        $this->total = $total; 
-        return $this; 
-    }
+    public function getLieuLivraison(): ?string { return $this->lieuLivraison; }
+    public function setLieuLivraison(string $lieuLivraison): self { $this->lieuLivraison = $lieuLivraison; return $this; }
 
-    public function isAPretMateriel(): ?bool { return $this->a_pret_materiel; }
+    public function getNombrePersonnes(): ?int { return $this->nombrePersonnes; }
+    public function setNombrePersonnes(int $nombrePersonnes): self { $this->nombrePersonnes = $nombrePersonnes; return $this; }
 
-    public function setAPretMateriel(bool $a_pret_materiel): static { 
-        $this->a_pret_materiel = $a_pret_materiel; 
-        return $this; 
-    }
+    public function getFraisLivraison(): ?float { return $this->fraisLivraison; }
+    public function setFraisLivraison(float $fraisLivraison): self { $this->fraisLivraison = $fraisLivraison; return $this; }
 
-    public function getMotifModification(): ?string { return $this->motif_modification; }
-
-    public function setMotifModification(?string $motif_modification): static { 
-        $this->motif_modification = $motif_modification; 
-        return $this; 
-    }
-
-    public function getModeContactMotif(): ?string { return $this->mode_contact_motif; }
-
-    public function setModeContactMotif(?string $mode_contact_motif): static { 
-        $this->mode_contact_motif = $mode_contact_motif; 
-        return $this; 
-    }
+    public function getTotalTTC(): ?float { return $this->totalTTC; }
+    public function setTotalTTC(float $totalTTC): self { $this->totalTTC = $totalTTC; return $this; }
 
     public function getClient(): ?User { return $this->client; }
+    public function setClient(?User $client): self { $this->client = $client; return $this; }
 
-    public function setClient(?User $client): static { 
-        $this->client = $client; 
-        return $this; 
-    }
-
-    /** @return Collection<int, LigneCommande> */
-    public function getLignes(): Collection { return $this->lignes; }
-
-    public function addLigne(LigneCommande $ligne): static
-    {
-        if (!$this->lignes->contains($ligne)) {
-            $this->lignes->add($ligne);
-            $ligne->setCommande($this);
-        }
-        return $this;
-    }
+    public function getMenu(): ?Menu { return $this->menu; }
+    public function setMenu(?Menu $menu): self { $this->menu = $menu; return $this; }
 }

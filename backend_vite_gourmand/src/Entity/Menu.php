@@ -19,15 +19,6 @@ class Menu
     #[Groups(['main'])]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'menus')]
-    #[ORM\JoinColumn(
-    name: "theme_id",
-    referencedColumnName: "theme_id",
-    nullable: false
-    )]
-    #[Groups(['main'])]
-    private ?Theme $theme = null;
-
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
     #[Assert\Regex(

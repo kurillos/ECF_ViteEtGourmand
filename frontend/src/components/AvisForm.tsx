@@ -3,11 +3,17 @@ import { Link } from 'react-router-dom';
 import { postAvis } from '../services/api';
 
 const AvisForm = () => {
-    const user = localStorage.getItem('user');
+    const userString = localStorage.getItem('user');
+    const authData = userString ? JSON.parse(userString) : null;
+    
+    // Extraction sécurisée de l'email selon ta structure JSON
+    const userEmail = authData?.user?.email || authData?.email;
+
     const [formData, setFormData] = useState({ message: '', note: 5});
     const [status, setStatus] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
 
-    if (!user) {
+    // Si on n'a pas d'email, on affiche le message de connexion
+    if (!userEmail) {
         return (
             <div className="text-center p-8 bg-white rounded-2xl shadow-sm border border-dashed border-gray-300">
                 <p className="text-gray-500 mb-4">Vous devez être connecté pour laisser un avis.</p>
@@ -29,18 +35,22 @@ const AvisForm = () => {
         }
     };
 
+    // AJOUT DU RETURN ICI :
     return (
         <div className="bg-white p-8 rounded-2xl shadow-xl max-w-lg mx-auto border border-gray-100">
             <h2 className="text-2xl font-black text-gray-900 mb-6 italic">Donnez-nous votre avis !</h2>
-            <p className='text-sm text-gray-500 mb-6'>Connecté en tant que : <span className='font-bold'>{user}</span></p>
+            
+            <p className='text-sm text-gray-500 mb-6'>
+                Connecté en tant que : <span className='font-bold'>{userEmail}</span>
+            </p>
 
             {status && (
-                <div className="mb-4 p-4 rounded-lg text-sm font-bold ${status.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}">
+                <div className={`mb-4 p-4 rounded-lg text-sm font-bold ${status.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                     {status.msg}
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} action="" className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                     <label className="block text-xs font-bold uppercase text-gray-400 mb-1">Note / 5</label>
                     <select
@@ -58,7 +68,7 @@ const AvisForm = () => {
                         required 
                         rows={4}
                         placeholder="Votre message ici..."
-                        className='w-full p-3 bg-gray-50 border border-gray-100 placeholder-gray-400 rounded-lg focus:ring-2 focus-ring-orange-500 outilne-none transition'
+                        className='w-full p-3 bg-gray-50 border border-gray-100 placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none transition'
                         value={formData.message}
                         onChange={(e) => setFormData({...formData, message: e.target.value})}
                     ></textarea>
@@ -73,4 +83,3 @@ const AvisForm = () => {
 };
 
 export default AvisForm;
-
