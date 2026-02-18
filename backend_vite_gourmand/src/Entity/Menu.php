@@ -15,7 +15,7 @@ class Menu
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: "menu_id")]
+    #[ORM\Column]
     #[Groups(['main'])]
     private ?int $id = null;
 
@@ -67,10 +67,14 @@ class Menu
 
     #[ORM\ManyToMany(targetEntity: Plat::class)]
     #[ORM\JoinTable(name: "menu_plats")]
-    #[ORM\JoinColumn(name: "menu_id", referencedColumnName: "menu_id")]
+    #[ORM\JoinColumn(name: "menu_id", referencedColumnName: "id")]
     #[ORM\InverseJoinColumn(name: "plat_id", referencedColumnName: "plat_id")]
     #[Groups(['main'])]
     private Collection $plats;
+
+    #[ORM\ManyToOne(targetEntity: Theme::class)]
+    #[ORM\JoinColumn(name: "theme_id", referencedColumnName: "theme_id", nullable: false)]
+    private ?Theme $theme = null;
 
     public function __construct()
     {
@@ -220,6 +224,11 @@ class Menu
         
         return $this; 
     
+    }
+
+    public function getRegime(): ?string
+    {
+        return $this->regime;
     }
 
 }

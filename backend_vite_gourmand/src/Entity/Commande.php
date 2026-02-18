@@ -53,11 +53,6 @@ class Commande
     #[Groups(['commande:read'])]
     private ?User $client = null;
 
-    #[ORM\ManyToOne(targetEntity: Menu::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['commande:read'])]
-    private ?Menu $menu = null;
-
     public function __construct()
     {
         $this->dateCommande = new \DateTime();
@@ -91,7 +86,4 @@ class Commande
 
     public function getClient(): ?User { return $this->client; }
     public function setClient(?User $client): self { $this->client = $client; return $this; }
-
-    public function getMenu(): ?Menu { return $this->menu; }
-    public function setMenu(?Menu $menu): self { $this->menu = $menu; return $this; }
 }

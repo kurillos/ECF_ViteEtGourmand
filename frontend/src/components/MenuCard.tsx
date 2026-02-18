@@ -39,9 +39,9 @@ const MenuCard: React.FC<MenuCardProps> = ({ menu }) => {
         </div>
     </div>
         {/* Contenu textuel */}
-        <div className="p-6 flex flex-col flex-grow">
+        <div className="p-6 flex flex-col grow">
             <h2 className="text-xl font-bold text-gray-800 mb-2">{menu.titre_menu}</h2>
-            <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-grow line-clamp-3">
+            <p className="text-gray-600 text-sm leading-relaxed mb-4 grow line-clamp-3">
                 {menu.description_menu}
             </p>
             

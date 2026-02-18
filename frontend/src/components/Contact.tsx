@@ -33,7 +33,7 @@ const Contact: React.FC = () => {
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <Navbar />
             
-            <main className="flex-grow flex items-center justify-center py-16 px-6">
+            <main className="grow flex items-center justify-center py-16 px-6">
                 <div className="max-w-2xl w-full bg-white shadow-2xl rounded-3xl overflow-hidden">
                     <div className="bg-gray-950 p-8 text-center">
                         <h1 className="text-3xl font-black italic text-white uppercase tracking-tighter">

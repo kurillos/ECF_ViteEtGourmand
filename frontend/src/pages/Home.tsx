@@ -37,7 +37,6 @@ useEffect(() => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900">
-      <Navbar />
       {/* 1. SECTION HERO & PRÉSENTATION */}
       <section className="relative py-20 bg-orange-50">
         <div className="max-w-7xl mx-auto px-8 grid md:grid-cols-2 gap-12 items-center">
@@ -124,7 +123,6 @@ useEffect(() => {
             )}
         </div>
       </section>
-      <Footer />
     </div>
   );
 }

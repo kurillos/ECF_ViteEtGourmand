@@ -48,7 +48,7 @@ export const MenuDetail = () => {
                     <img 
                         src={`http://localhost:8000${menu.image_url}`} 
                         alt={menu.titre_menu} 
-                        className="rounded-2xl shadow-lg object-cover w-full h-[450px] transition-transform duration-500 group-hover:scale-[1.02]" 
+                        className="rounded-2xl shadow-lg object-cover w-full h-112.5 transition-transform duration-500 group-hover:scale-[1.02]" 
                         onError={(e) => { e.currentTarget.src = "https://via.placeholder.com/450?text=Vite+Et+Gourmand"; }}
                     />
                     <div className="absolute top-4 left-4 bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-md">

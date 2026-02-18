@@ -55,7 +55,7 @@ class PublicAvisController extends AbstractController
         $em->flush();
 
         return $this->json([
-            'message' => 'Merci !' . $user->getUserIdenitifier() . ' ! votre avis a été envoyé et sera modéré dans les plus brefs délais.'
+            'message' => 'Merci ! ' . $user->getUserIdentifier() . ' ! votre avis a été envoyé, il sera modéré dans les plus brefs délais !'
         ], Response::HTTP_CREATED);
     }
 }

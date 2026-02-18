@@ -51,6 +51,7 @@ security:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/hours, roles: PUBLIC_ACCESS }
         - { path: ^/api/menus, roles: PUBLIC_ACCESS }
+        - { path: ^/api/avis, roles: PUBLIC_ACCESS, methods: [GET] }
 
         # 2. Lecture seule
         - { path: ^/api/avis, roles: PUBLIC_ACCESS, methods: [GET] }
@@ -58,7 +59,8 @@ security:
 
         # 3. Routes protégées
         - { path: ^/api/avis, roles: ROLE_USER, methods: [POST] }
-        - { path: ^/api/admin, roles: ROLE_EMPLOYE }
+        - { path: ^/api/admin, roles: ROLE_ADMIN }    # Seul l'admin
+        - { path: ^/api/employe, roles: ROLE_EMPLOYE } # Les employés et l'admin
         
 
 when@test:

@@ -9,6 +9,7 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     localStorage.removeItem('user');
     navigate('/');
+    window.location.reload(); 
   };
 
   return (
@@ -20,7 +21,7 @@ const Navbar: React.FC = () => {
         </Link>
 
         {/* Liens principaux */}
-        <ul className="hidden md:flex items-center space-x-8 font-semibold text-sm text-gray-600 list-none">
+        <ul className="hidden md:flex items-center space-x-8 font-semibold text-sm text-gray-600 list-none mb-0">
           <li>
             <Link to="/" className="hover:text-orange-500 transition-colors">Accueil</Link>
           </li>
@@ -31,30 +32,40 @@ const Navbar: React.FC = () => {
             <Link to="/contact" className="hover:text-orange-500 transition-colors">Contact</Link>
           </li>
           
-          {/* Inscription (visible uniquement si déconnecté) */}
           {!user && (
             <li>
               <Link to="/register" className="hover:text-orange-500 transition-colors">Inscription</Link>
             </li>
           )}
 
-          {/* Lien Admin (si connecté) */}
-          {user && (
-            <li>
-              <Link to="/admin" className="text-orange-600 font-bold hover:underline">Espace Admin</Link>
-            </li>
-          )}
+          {/* Espace Admin (affiché seulement si l'utilisateur a les droits) */}
+          {user && user.user?.roles?.some((role: string) => ['ROLE_ADMIN', 'ROLE_EMPLOYE'].includes(role)) && (
+          <li>
+            <Link to="/admin" className="text-orange-600 font-bold hover:underline">Espace Admin</Link>
+          </li>
+        )}
         </ul>
 
-        {/* Action Connexion / Déconnexion */}
-        <div className="flex items-center gap-4">
+        {/* Action Profil / Connexion / Déconnexion */}
+        <div className="flex items-center gap-3">
           {user ? (
-            <button 
-              onClick={handleLogout}
-              className="bg-red-50 text-red-600 px-5 py-2 rounded-full text-sm font-bold hover:bg-red-600 hover:text-white transition-all"
-            >
-              Déconnexion
-            </button>
+            <>
+              {/* LIEN MON PROFIL (Ajouté ici) */}
+              <Link 
+                to="/profil" 
+                className="flex items-center gap-2 bg-gray-100 text-gray-700 px-5 py-2 rounded-full text-sm font-bold hover:bg-gray-200 transition-all"
+              >
+                <span className="text-lg">👤</span>
+                <span className="hidden sm:inline">Mon Profil</span>
+              </Link>
+
+              <button 
+                onClick={handleLogout}
+                className="bg-red-50 text-red-600 px-5 py-2 rounded-full text-sm font-bold hover:bg-red-600 hover:text-white transition-all"
+              >
+                Déconnexion
+              </button>
+            </>
           ) : (
             <Link 
               to="/login" 

@@ -61,7 +61,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, Commande>
      */
     #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'user')]
-    private Collection $menu;
+    private Collection $commandes;
 
     public function __construct()
     {
@@ -201,12 +201,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Commande>
      */
-    public function getMenu(): Collection
+    public function getCommandes(): Collection
     {
         return $this->menu;
     }
 
-    public function addMenu(Commande $menu): static
+    public function addCommande(Commande $menu): static
     {
         if (!$this->menu->contains($menu)) {
             $this->menu->add($menu);
@@ -216,7 +216,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeMenu(Commande $menu): static
+    public function removeCommande(Commande $menu): static
     {
         if ($this->menu->removeElement($menu)) {
             // set the owning side to null (unless already changed)

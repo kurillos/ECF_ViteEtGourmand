@@ -8,23 +8,30 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-        setIsLoading(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
 
-        try {
-            const data = await login(credentials);
-            // On stocke les infos utilisateur (email, rôles) dans le localStorage
-            localStorage.setItem('user', JSON.stringify(data));
-            // Redirection vers l'espace admin après succès
-            navigate('/admin');
-        } catch (err: any) {
-            setError(err.message || 'Identifiants incorrects');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    try {
+      const data = await login(credentials); 
+      localStorage.setItem('user', JSON.stringify(data));
+
+      // On accède aux rôles via data.user.roles
+      const userRoles = data.user?.roles || [];
+
+      if (userRoles.includes('ROLE_ADMIN') || userRoles.includes('ROLE_EMPLOYE')) {
+        navigate('/admin');
+      } else {
+        // Redirige vers le profil ou l'accueil pour un client
+        navigate('/profil'); 
+      }
+    } catch (err: any) {
+      setError(err.message || 'Identifiants incorrects');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">

@@ -92,7 +92,7 @@ const CommandeForm = () => {
                 </div>
 
                 {/* Récapitulatif Julie */}
-<div className="p-6 bg-orange-50 rounded-[2rem] border border-orange-100 space-y-3">
+<div className="p-6 bg-orange-50 rounded-4xl border border-orange-100 space-y-3">
     <div className="flex justify-between font-medium">
         <span>Prestation ({nbPers} pers.)</span>
         <span>{prixBase.toFixed(2)}€</span>

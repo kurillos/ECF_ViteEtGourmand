@@ -114,4 +114,9 @@ class OpeningHour
 {
     return $this->isClosed;
 }
+
+    public function isClosed(): ?bool
+    {
+        return $this->isClosed;
+    }
 }

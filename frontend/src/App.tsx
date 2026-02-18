@@ -12,19 +12,23 @@ import { MenuDetail } from './components/MenuDetail';
 import MenusPage from './pages/MenusPage';
 import Register from './pages/Register';
 import CommandeForm from './components/CommandeForm';
+import { UserProfile } from './components/UserProfile';
+import Navbar from './partials/Navbar';
+import Footer from './partials/Footer';
 
 function App () {
   return (
     <Router>
+      <Navbar />
   <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/login" element={<Login />} />
     <Route path="/contact" element={<Contact />} />
     <Route path="/menu/:id" element={<MenuDetail />} />
     <Route path="/menus" element={<MenusPage />} />
-    {/* <Route path="/commander/:id" element={<Checkout />} /> */}
     <Route path="/register" element={<Register />} />
     <Route path="/commande/:id" element={<CommandeForm />} />
+    <Route path="/profil" element={<UserProfile />} />
     
     {/* Page principale du Dashboard */}
     <Route path="/admin" element={
@@ -47,6 +51,7 @@ function App () {
       </ProtectedRoute>
     } />
   </Routes>
+  <Footer />
 </Router>
   );
 }
