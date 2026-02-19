@@ -8,11 +8,11 @@ import AdminOrders from './pages/admin/AdminOrders';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminMenus from './pages/admin/AdminMenus';
-import { MenuDetail } from './components/MenuDetail';
+import MenuDetail from './components/MenuDetail';
 import MenusPage from './pages/MenusPage';
 import Register from './pages/Register';
 import CommandeForm from './components/CommandeForm';
-import { UserProfile } from './components/UserProfile';
+import UserProfile from './components/UserProfile';
 import Navbar from './partials/Navbar';
 import Footer from './partials/Footer';
 

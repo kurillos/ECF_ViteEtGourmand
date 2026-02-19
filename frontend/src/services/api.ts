@@ -140,6 +140,10 @@ export const menuService = {
         const response = await fetch(`${API_URL}/admin/menus`, { headers: getAuthHeaders() });
         return handleResponse(response);
     },
+    getById: async (id: string | number) => {
+        const response = await fetch(`${API_URL}/menus/${id}`);
+        return handleResponse(response);
+    },
     create: async (data: any) => {
         const response = await fetch(`${API_URL}/admin/menus`, {
             method: 'POST',
