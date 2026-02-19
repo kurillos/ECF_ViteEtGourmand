@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { postAvis } from '../services/api';
 
 const AvisForm = () => {
-    const userString = localStorage.getItem('user');
-    const authData = userString ? JSON.parse(userString) : null;
+    const authString = localStorage.getItem('auth');
+    const authData = authString ? JSON.parse(authString) : null;
     
     // Extraction sécurisée de l'email selon ta structure JSON
     const userEmail = authData?.user?.email || authData?.email;
@@ -26,8 +26,11 @@ const AvisForm = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const token = authData?.token;
+
         try {
-            await postAvis(formData);
+            await postAvis(formData, token);
             setStatus({ type: 'success', msg: 'Merci ! Votre avis est en cours de modération.'});
             setFormData({ message: '', note: 5});
         } catch (error: any) {

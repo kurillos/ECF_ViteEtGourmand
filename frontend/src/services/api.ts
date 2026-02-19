@@ -2,97 +2,62 @@ import { Menu } from '../types/Menu';
 
 const API_URL = 'http://localhost:8000/api';
 
-/**
- * Helper pour récupérer les headers d'authentification.
- * Plus robuste : évite d'envoyer "Bearer undefined"
- */
-const getAuthHeaders = (): Record<string, string> => {
-    const userJson = localStorage.getItem('user');
-    const headers: Record<string, string> = {
-        'Content-Type': 'application/json'
+const getAuthHeaders = () => {
+    const authString = localStorage.getItem('auth');
+    const authData = authString ? JSON.parse(authString) : null;
+    const token = authData?.token;
+
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token.replace(/"/g, '')}` : '',
     };
-
-    if (!userJson) return headers;
-
-    try {
-        // 1. On parse une première fois
-        let data = JSON.parse(userJson);
-        
-        // 2. Si c'est encore du texte (le bug des doubles guillemets), on re-parse
-        if (typeof data === 'string') {
-            data = JSON.parse(data);
-        }
-
-        const token = data?.token;
-
-        if (token) {
-            // 3. NETTOYAGE ULTIME : on enlève les guillemets s'ils sont restés collés
-            const cleanToken = token.replace(/"/g, '');
-            headers['Authorization'] = `Bearer ${cleanToken}`;
-        }
-    } catch (error) {
-        console.error("Erreur d'extraction du token :", error);
-    }
-
-    return headers;
 };
 
 const handleResponse = async (response: Response) => {
     if (response.status === 401) {
         const data = await response.json().catch(() => ({}));
-
-        // On vérifie l'expiration du token
         if (data.message === "Expired JWT Token" || data.message === "Invalid JWT Token") {
             console.warn("Session expirée, déconnexion...");
+            localStorage.removeItem('auth');
             localStorage.removeItem('user');
             window.location.href = '/login';
             return;
         }
     }
-
     if (!response.ok) {
         throw new Error(`Erreur API: ${response.status}`);
     }
-
     return response.json();
 };
-
 
 // --- SECTION MENUS (PUBLIC) ---
 export const fetchAllMenus = async (): Promise<Menu[]> => {
     const response = await fetch(`${API_URL}/menus`);
-    if (!response.ok) throw new Error('Erreur réseau');
-    return response.json();
+    return handleResponse(response);
 };
 
 // --- SECTION AVIS ---
-// 1. Pour les clients connectés (Soumission d'avis)
-export const postAvis = async (avisData: { message: string; note: number }) => {
+export const postAvis = async (avisData: { message: string; note: number }, token?: string) => {
+    const headers: any = getAuthHeaders();
+    if (token) {
+        headers['Authorization'] = `Bearer ${token.replace(/"/g, '')}`;
+    }
     const response = await fetch(`${API_URL}/avis`, {
         method: 'POST',
-        headers: getAuthHeaders(),
+        headers: headers,
         body: JSON.stringify(avisData),
     });
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erreur lors de l'envoi");
-    }
-    return response.json();
+    return handleResponse(response);
 };
 
-// 2. Pour la page publique (Consultation)
 export const fetchAvis = async () => { 
-    // Pas besoin de headers si la route est PUBLIC_ACCESS en GET
     const response = await fetch(`${API_URL}/avis`);
-    if (!response.ok) throw new Error('Erreur chargement avis');
-    return response.json();
+    return handleResponse(response);
 };
 
-// 3. Pour l'Admin (Modération)
 export const fetchAdminAvis = async () => {
     const response = await fetch(`${API_URL}/admin/avis`, { headers: getAuthHeaders() });
-    if (!response.ok) throw new Error('Erreur récupération avis admin');
-    return response.json();
+    return handleResponse(response);
 };
 
 export const validateAvis = async (id: number) => {
@@ -100,8 +65,7 @@ export const validateAvis = async (id: number) => {
         method: 'PATCH',
         headers: getAuthHeaders(),
     });
-    if (!response.ok) throw new Error(`Erreur validation avis ${id}`);
-    return response.json();
+    return handleResponse(response);
 };
 
 export const deleteAvis = async (id: number) => {
@@ -109,8 +73,7 @@ export const deleteAvis = async (id: number) => {
         method: 'DELETE',
         headers: getAuthHeaders(),
     });
-    if (!response.ok) throw new Error('Erreur suppression avis');
-    return response.json();
+    return handleResponse(response);
 };
 
 // --- SECTION AUTH ---
@@ -120,22 +83,19 @@ export const login = async (credentials: { email: string; password: string }) =>
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
     });
-    
     if (!response.ok) throw new Error('Erreur de connexion');
-
     const data = await response.json();
     const authStore = {
         token: data.token,
         email: credentials.email,
         roles: data.roles || []
     };
-
     localStorage.setItem('auth', JSON.stringify(authStore));
     return authStore;
-
 };
 
 export const logout = () => {
+    localStorage.removeItem('auth');
     localStorage.removeItem('user');
     window.location.href = '/login';
 };
@@ -143,17 +103,15 @@ export const logout = () => {
 // --- SECTION HORAIRES ---
 export const fetchOpeningHours = async () => {
     const response = await fetch(`${API_URL}/hours`);
-    if (!response.ok) throw new Error('Impossible d\'afficher les horaires');
-    return response.json();
+    return handleResponse(response);
 };
 
-// --- SECTION COMMANDES ---
+// --- SECTION COMMANDES (ADMIN) ---
 export const commandeService = {
     getAll: async (statut?: string) => {
         const url = statut ? `${API_URL}/admin/commandes?statut=${statut}` : `${API_URL}/admin/commandes`;
         const response = await fetch(url, { headers: getAuthHeaders() });
-        if (!response.ok) throw new Error('Erreur chargement commandes');
-        return response.json();
+        return handleResponse(response);
     },
     updateStatus: async (id: number, data: any) => {
         const response = await fetch(`${API_URL}/admin/commandes/${id}/status`, {
@@ -161,49 +119,38 @@ export const commandeService = {
             headers: getAuthHeaders(),
             body: JSON.stringify(data),
         });
-        return response.json();
+        return handleResponse(response);
     },
     delete: async (id: number) => {
         const response = await fetch(`${API_URL}/admin/commandes/${id}/supprimer`, {
             method: 'DELETE',
             headers: getAuthHeaders(),
         });
-        return response.json();
+        return handleResponse(response);
     }
 };
 
 // --- SECTION SERVICES ADMIN ---
 export const menuService = {
-    // . Pour l'affichage Menus
     getAll: async () => {
-        const response = await fetch(`${API_URL}/menus`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        });
+        const response = await fetch(`${API_URL}/menus`);
         return handleResponse(response);
     },
-
-    // 2. POUR L'ADMIN (Le tableau de bord de Julie)
     getAllAdmin: async () => {
-        const response = await fetch(`${API_URL}/admin/menus`, {
-            method: 'GET',
-            headers: getAuthHeaders(),
-        });
+        const response = await fetch(`${API_URL}/admin/menus`, { headers: getAuthHeaders() });
         return handleResponse(response);
     },
-    
     create: async (data: any) => {
         const response = await fetch(`${API_URL}/admin/menus`, {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify(data),
         });
-        if (!response.ok) throw new Error('Erreur création menu');
         return handleResponse(response);
     },
     update: async (id: number, data: any) => {
         const response = await fetch(`${API_URL}/admin/menus/${id}`, {
-            method: 'PUT', // Route PUT côté Symfony
+            method: 'PUT',
             headers: getAuthHeaders(),
             body: JSON.stringify(data),
         });
@@ -215,16 +162,6 @@ export const menuService = {
             headers: getAuthHeaders(),
         });
         return handleResponse(response);
-    },
-    getById: async (id: number) => {
-        const response = await fetch(`${API_URL}/menus/${id}`);
-        const data = await response.json(); 
-    
-        if (!response.ok) {
-            throw new Error('Détail menu introuvable');
-        }
-    
-        return data;
     }
 };
 
@@ -239,7 +176,6 @@ export const platService = {
             headers: getAuthHeaders(),
             body: JSON.stringify(data),
         });
-        if (!response.ok) throw new Error('Erreur création plat');
         return handleResponse(response);
     },
     delete: async (id: number) => {
@@ -262,7 +198,6 @@ export const themeService = {
             headers: getAuthHeaders(),
             body: JSON.stringify(data),
         });
-        if (!response.ok) throw new Error('Erreur création thème');
-        return response.json();
+        return handleResponse(response);
     }
 };
