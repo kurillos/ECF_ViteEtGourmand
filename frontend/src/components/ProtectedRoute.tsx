@@ -1,26 +1,28 @@
-import { Navigate } from "react-router";
+import { Navigate } from "react-router-dom";
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
-    allowedRoles?: string[]; 
+    allowedRoles?: string[];
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
-    const userStr = localStorage.getItem('user');
-    const user = userStr ? JSON.parse(userStr) : null;
 
-    if (!user || !user.token) {
+    const authStr = localStorage.getItem('auth');
+    const auth = authStr ? JSON.parse(authStr) : null;
+
+    if (!auth || !auth.token) {
         return <Navigate to="/login" replace />;
     }
 
-    const userRoles = user.user?.roles || []; 
+    const userRoles = auth.roles || [];
 
     if (allowedRoles) {
-        const hasAccess = userRoles.some((role: string) => allowedRoles.includes(role));
-        
+        const hasAccess = userRoles.some((role: string) => 
+            allowedRoles.includes(role)
+        );
+
         if (!hasAccess) {
-            console.warn("Accès refusé : Rôles insuffisants", userRoles);
-            return <Navigate to="/" replace />; 
+            return <Navigate to="/" replace />;
         }
     }
 

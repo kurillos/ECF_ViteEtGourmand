@@ -3,24 +3,34 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  const userJson = localStorage.getItem('user');
-  const user = userJson ? JSON.parse(userJson) : null;
+
+  // On récupère les données de la nouvelle clé stable 'auth'
+  const auth = JSON.parse(localStorage.getItem('auth') || 'null');
+  const roles = auth?.roles || [];
+  const isLogged = !!auth;
 
   const handleLogout = () => {
+    // Nettoyage complet des deux clés pour éviter les "fantômes"
+    localStorage.removeItem('auth');
     localStorage.removeItem('user');
+    
+    // Redirection vers l'accueil ou login
     navigate('/');
+    
+    // On recharge pour réinitialiser l'état global de l'application
     window.location.reload(); 
   };
 
   return (
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 px-6 md:px-12 py-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        {/* Logo */}
+        
+        {/* LOGO */}
         <Link to="/" className="text-2xl font-black tracking-tighter text-gray-900 cursor-pointer">
           VITE <span className="text-orange-500">&</span> GOURMAND
         </Link>
 
-        {/* Liens principaux */}
+        {/* LIENS PRINCIPAUX */}
         <ul className="hidden md:flex items-center space-x-8 font-semibold text-sm text-gray-600 list-none mb-0">
           <li>
             <Link to="/" className="hover:text-orange-500 transition-colors">Accueil</Link>
@@ -32,25 +42,27 @@ const Navbar: React.FC = () => {
             <Link to="/contact" className="hover:text-orange-500 transition-colors">Contact</Link>
           </li>
           
-          {!user && (
+          {/* Inscription visible seulement si non connecté */}
+          {!isLogged && (
             <li>
               <Link to="/register" className="hover:text-orange-500 transition-colors">Inscription</Link>
             </li>
           )}
 
-          {/* Espace Admin (affiché seulement si l'utilisateur a les droits) */}
-          {user && user.user?.roles?.some((role: string) => ['ROLE_ADMIN', 'ROLE_EMPLOYE'].includes(role)) && (
-          <li>
-            <Link to="/admin" className="text-orange-600 font-bold hover:underline">Espace Admin</Link>
-          </li>
-        )}
+          {/* ESPACE ADMIN : Visible seulement pour ROLE_EMPLOYE ou ROLE_ADMIN */}
+          {(roles.includes('ROLE_EMPLOYE') || roles.includes('ROLE_ADMIN')) && (
+            <li>
+              <Link to="/admin" className="text-orange-600 font-bold hover:underline">
+                Espace Admin
+              </Link>
+            </li>
+          )}
         </ul>
 
-        {/* Action Profil / Connexion / Déconnexion */}
+        {/* ACTIONS DROITE (Profil / Connexion / Déconnexion) */}
         <div className="flex items-center gap-3">
-          {user ? (
+          {isLogged ? (
             <>
-              {/* LIEN MON PROFIL (Ajouté ici) */}
               <Link 
                 to="/profil" 
                 className="flex items-center gap-2 bg-gray-100 text-gray-700 px-5 py-2 rounded-full text-sm font-bold hover:bg-gray-200 transition-all"

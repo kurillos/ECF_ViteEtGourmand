@@ -58,9 +58,10 @@ security:
         
 
         # 3. Routes protégées
-        - { path: ^/api/avis, roles: ROLE_USER, methods: [POST] }
+        - { path: ^/api/admin/stats, roles: ROLE_ADMIN } # Graphs
         - { path: ^/api/admin, roles: ROLE_ADMIN }    # Seul l'admin
         - { path: ^/api/employe, roles: ROLE_EMPLOYE } # Les employés et l'admin
+        - { path: ^/api/avis, roles: ROLE_USER, methods: [POST] }
         
 
 when@test:

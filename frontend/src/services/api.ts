@@ -124,16 +124,15 @@ export const login = async (credentials: { email: string; password: string }) =>
     if (!response.ok) throw new Error('Erreur de connexion');
 
     const data = await response.json();
-    const userStore = {
+    const authStore = {
         token: data.token,
-        user: {
-            email: credentials.email,
-            roles: data.roles || ['ROLE_EMPLOYE'] 
-        }
+        email: credentials.email,
+        roles: data.roles || []
     };
 
-    localStorage.setItem('user', JSON.stringify(userStore));
-    return userStore; 
+    localStorage.setItem('auth', JSON.stringify(authStore));
+    return authStore;
+
 };
 
 export const logout = () => {

@@ -30,9 +30,7 @@ const Contact: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-            <Navbar />
-            
+        <div className="min-h-screen bg-gray-50 flex flex-col">            
             <main className="grow flex items-center justify-center py-16 px-6">
                 <div className="max-w-2xl w-full bg-white shadow-2xl rounded-3xl overflow-hidden">
                     <div className="bg-gray-950 p-8 text-center">
@@ -98,8 +96,6 @@ const Contact: React.FC = () => {
                     </form>
                 </div>
             </main>
-
-            <Footer />
         </div>
     );
 };
