@@ -15,14 +15,17 @@ const Login = () => {
 
         try {
             const authData = await login(credentials);
+            console.log("Login success:", authData);
 
-            if (
-                authData.roles.includes('ROLE_EMPLOYE') ||
-                authData.roles.includes('ROLE_ADMIN')
-            ) {
-                navigate('/admin');
+            localStorage.setItem('auth', JSON.stringify(authData));
+
+            // Vérification des droits admin/employé
+            const isAdminOrStaff = authData.roles.includes('ROLE_EMPLOYE') || 
+                                   authData.roles.includes('ROLE_ADMIN');
+            if (isAdminOrStaff) {
+                window.location.href = '/admin';
             } else {
-                navigate('/');
+                window.location.href = '/';
             }
 
         } catch (err) {

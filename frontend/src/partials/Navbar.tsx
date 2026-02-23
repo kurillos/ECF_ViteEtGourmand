@@ -5,17 +5,30 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
 
   // On récupère les données de la nouvelle clé stable 'auth'
-  const auth = JSON.parse(localStorage.getItem('auth') || 'null');
-  const roles = auth?.roles || [];
-  const isLogged = !!auth;
+  const [userRoles, setUserRoles] = React.useState<string[]>([]);
+  const [isLogged, setIsLogged] = React.useState(false);
+
+  // Lecture initiale des données 'auth'
+  React.useEffect(() => {
+    const authData = JSON.parse(localStorage.getItem('auth') || 'null');
+    if (authData) {
+      setUserRoles(authData.roles || []);
+      setIsLogged(true);
+    }
+  }, []);
 
   const handleLogout = () => {
     // Nettoyage complet des deux clés pour éviter les "fantômes"
     localStorage.removeItem('auth');
     localStorage.removeItem('user');
+
+    // Mise à jour de l'état
+    setUserRoles([]);
+    setIsLogged(false);
     
     // Redirection vers l'accueil ou login
     navigate('/');
+    window.location.reload();
     
     // On recharge pour réinitialiser l'état global de l'application
     window.location.reload(); 
@@ -50,7 +63,7 @@ const Navbar: React.FC = () => {
           )}
 
           {/* ESPACE ADMIN : Visible seulement pour ROLE_EMPLOYE ou ROLE_ADMIN */}
-          {(roles.includes('ROLE_EMPLOYE') || roles.includes('ROLE_ADMIN')) && (
+          {(userRoles.includes('ROLE_EMPLOYE') || userRoles.includes('ROLE_ADMIN')) && (
             <li>
               <Link to="/admin" className="text-orange-600 font-bold hover:underline">
                 Espace Admin

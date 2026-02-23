@@ -63,12 +63,36 @@ class AppFixtures extends Fixture
         $client = new User();
         $client->setEmail('client@test.fr')
                ->setRoles(['ROLE_USER'])
-               ->setPassword($this->passwordHasher->hashPassword($client, 'Client123!'))
+               ->setPassword($this->passwordHasher->hashPassword($client, 'ViteGourmand2026!'))
                ->setNom('Doe')
                ->setPrenom('Jane')
                ->setTelephone('0601020304')
                ->setAdressePostale('10 rue de la Paix, Bordeaux');
         $manager->persist($client);
+        
+
+       // JOSE (L'Admin)
+        $jose = new User();
+        $jose->setEmail('jose@viteetgourmand.fr')
+             ->setRoles(['ROLE_ADMIN'])
+             ->setPassword($this->passwordHasher->hashPassword($jose, 'ViteGourmand2026!'))
+             ->setNom('Gomez')
+             ->setPrenom('Jose')
+             ->setTelephone('0600000001')
+             ->setAdressePostale('Bureaux Vite et Gourmand');
+        $manager->persist($jose);
+
+        // JULIE (L'Employée)
+        $julie = new User();
+        $julie->setEmail('julie@viteetgourmand.fr')
+             ->setRoles(['ROLE_EMPLOYE'])
+             ->setPassword($this->passwordHasher->hashPassword($julie, 'ViteGourmand2026!'))
+             ->setNom('Dupont')
+             ->setPrenom('Julie')
+             ->setTelephone('0600000002')
+             ->setAdressePostale('Bureaux Vite et Gourmand');
+        $manager->persist($julie);
+
         $manager->flush();
 
         // 4. Les Horaires

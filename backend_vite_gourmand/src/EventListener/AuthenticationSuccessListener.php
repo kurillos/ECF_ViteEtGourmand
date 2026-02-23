@@ -16,11 +16,8 @@ class AuthenticationSuccessListener
             return;
         }
 
-        // Données utilisateur dans la réponse JSON
-        $data['user'] = [
-            'email' => $user->getUserIdentifier(),
-            'roles' => $user->getRoles(),
-        ];
+        $data['roles'] = $user->getRoles();
+        $data['email'] = $user->getUserIdentifier();
 
         $event->setData($data);
     }

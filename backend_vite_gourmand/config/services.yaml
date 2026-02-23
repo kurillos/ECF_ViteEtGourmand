@@ -5,22 +5,18 @@ services:
         autowire: true
         autoconfigure: true
         
-    App\EventListener\AuthenticationSuccessListener:
-        tags:
-            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
-
-    # 1. On laisse Symfony charger tout le dossier src d'abord
+    # 1. Charge d'abord tout le dossier src
     App\:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-    App\Controller\:
-        resource: '../src/Controller/'
-        tags: ['controller.service_arguments']
 
-    # 2. On écrase la configuration par défaut pour ce service précis
+    App\EventListener\AuthenticationSuccessListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
+
     App\Service\StatService:
         arguments:
             $mongoUri: '%env(MONGODB_URL)%'

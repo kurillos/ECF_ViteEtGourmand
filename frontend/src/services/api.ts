@@ -77,21 +77,15 @@ export const deleteAvis = async (id: number) => {
 };
 
 // --- SECTION AUTH ---
-export const login = async (credentials: { email: string; password: string }) => {
+export const login = async (credentials: any) => {
     const response = await fetch(`${API_URL}/login_check`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+        },
         body: JSON.stringify(credentials),
     });
-    if (!response.ok) throw new Error('Erreur de connexion');
-    const data = await response.json();
-    const authStore = {
-        token: data.token,
-        email: credentials.email,
-        roles: data.roles || []
-    };
-    localStorage.setItem('auth', JSON.stringify(authStore));
-    return authStore;
+    return handleResponse(response);
 };
 
 export const logout = () => {
@@ -100,10 +94,28 @@ export const logout = () => {
     window.location.href = '/login';
 };
 
-// --- SECTION HORAIRES ---
+// --- SECTION HORAIRES (PUBLIC) ---
 export const fetchOpeningHours = async () => {
     const response = await fetch(`${API_URL}/hours`);
     return handleResponse(response);
+};
+
+// --- SECTION HORAIRES (ADMIN) ---
+export const hourService = {
+    getAllAdmin: async () => {
+        const response = await fetch(`${API_URL}/admin/hours`, { 
+            headers: getAuthHeaders() 
+        });
+        return handleResponse(response);
+    },
+    update: async (id: number, data: any) => {
+        const response = await fetch(`${API_URL}/admin/hours/${id}`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data),
+        });
+        return handleResponse(response);
+    }
 };
 
 // --- SECTION COMMANDES (ADMIN) ---
