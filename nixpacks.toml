@@ -1,0 +1,5 @@
+[phases.setup]
+nixPkgs = ["...", "php82Extensions.mongodb", "php82Extensions.pdo_mysql"]
+
+[phases.install]
+cmds = ["cd backend_vite_gourmand && composer install --optimize-autoloader --no-scripts --no-interaction --ignore-platform-req=ext-mongodb"]
