@@ -40,6 +40,18 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({ activeTab, onTabChange }) => 
                         >
                             📦 Commandes
                         </button>
+                        <button 
+                            onClick={() => onTabChange('users')}
+                            className={`px-4 py-2 rounded-lg font-bold transition ${activeTab === 'users' ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
+                        >
+                            👥 Employés
+                        </button>
+                        <button 
+                            onClick={() => onTabChange('stats')}
+                            className={`px-4 py-2 rounded-lg font-bold transition ${activeTab === 'stats' ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
+                        >
+                            📊 Stats NoSQL
+                        </button>
                     </div>
                 </div>
 

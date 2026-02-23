@@ -5,6 +5,8 @@ import AdminHoraires from './AdminHoraires';
 import AdminMenus from './AdminMenus';
 import AdminNavbar from '../../partials/AdminNavbar';
 import AdminOrders from '../admin/AdminOrders';
+import AdminStats from '../../components/AdminStats';
+import AdminUserForm from './AdminUserForm';
 
 const AdminDashboard: React.FC = () => {
     // 1. États (States)
@@ -95,6 +97,22 @@ const AdminDashboard: React.FC = () => {
                                 {avis.length === 0 && <p className="p-8 text-center text-gray-400">Aucun avis à modérer.</p>}
                             </div>
                         </section>
+                    )}
+
+                    {/* Gestion des Employés (Réservé à l'Admin) */}
+                    {isAdmin && shouldShow('users') && (
+                        <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                            <h2 className="text-xl font-bold mb-6 text-blue-600">👥 Gestion du personnel</h2>
+                            <AdminUserForm />
+                        </section>
+                    )}
+
+                    {/* Statistiques MongoDB (Réservé à l'Admin) */}
+                    {isAdmin && shouldShow('stats') && (
+                    <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h2 className="text-xl font-bold mb-6 text-purple-600">📊 Chiffre d'Affaires & Statistiques NoSQL</h2>
+                            <AdminStats />
+                    </section>
                     )}
 
                     {shouldShow('menus') && <AdminMenus />}

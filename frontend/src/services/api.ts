@@ -236,3 +236,34 @@ export const themeService = {
         return handleResponse(response);
     }
 };
+
+    // --- SECTION ADMIN (GÉRÉ PAR JOSÉ) ---
+export const adminService = {
+    // Créer un employé (US: email + password, notification mail)
+    createEmploye: async (data: any) => {
+        const response = await fetch(`${API_URL}/admin/users`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data),
+        });
+        return handleResponse(response);
+    },
+
+    // Désactiver un compte (US: en cas de départ)
+    toggleUserStatus: async (userId: number, isActive: boolean) => {
+        const response = await fetch(`${API_URL}/admin/users/${userId}/status`, {
+            method: 'PATCH',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ isActive }),
+        });
+        return handleResponse(response);
+    },
+
+    // Récupérer les stats MongoDB (US: CA et comparaison menus)
+    getStats: async () => {
+        const response = await fetch(`${API_URL}/admin/stats`, {
+            headers: getAuthHeaders(),
+        });
+        return handleResponse(response);
+    }
+};
