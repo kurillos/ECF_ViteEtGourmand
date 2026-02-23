@@ -4,14 +4,11 @@ nixPkgs = [
     "php82Packages.composer", 
     "php82Extensions.mongodb", 
     "php82Extensions.pdo_mysql", 
-    "php82Extensions.intl",
-    "apache"
+    "php82Extensions.intl"
 ]
 
 [phases.install]
-# On s'assure d'être dans le bon dossier pour le composer install
 cmds = ["cd backend_vite_gourmand && composer install --optimize-autoloader --no-interaction --ignore-platform-req=ext-mongodb"]
 
 [start]
-# On doit aussi faire le "cd" au démarrage pour que heroku-php-apache2 trouve le dossier public
 cmd = "cd backend_vite_gourmand && php bin/console doctrine:migrations:migrate --no-interaction && php bin/console lexik:jwt:generate-keypair --overwrite && heroku-php-apache2 public/"
