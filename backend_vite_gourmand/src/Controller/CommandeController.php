@@ -67,7 +67,7 @@ class CommandeController extends AbstractController
         $commande->setNombrePersonnes($nbPers);
         $commande->setFraisLivraison($frais);
         $commande->setTotalTTC($totalTTC);
-        $commande->setStatut('accepté');
+        $commande->setStatut('en_attente');
 
         $em->persist($commande);
         $em->flush();
@@ -95,5 +95,36 @@ class CommandeController extends AbstractController
             'message' => 'Commande enregistrée avec succès',
             'total' => $totalTTC
         ], 201);
+    }
+
+    #[Route('/api/user/commandes', name: 'api_user_commandes', methods: ['GET'])]
+    public function getUserHistory(): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) return $this->json(['error' => 'Non autorisé'], 401);
+
+        // On récupère les commandes du client connecté
+        $commandes = $user->getCommandes();
+
+        return $this->json($commandes, 200, [], ['groups' => 'commande:read']);
+    }
+
+    #[Route('/api/commande/{id}/annuler', name: 'api_commande_cancel', methods: ['PATCH'])]
+    public function cancel(Commande $commande, EntityManagerInterface $em): JsonResponse
+    {
+        // Sécurité : Vérifie que la commande appartient bien à l'utilisateur connecté
+        if ($commande->getClient() !== $this->getUser()) {
+            return $this->json(['error' => 'Action non autorisée'], 403);
+        }
+
+        // Logique métier : Annulation possible si pas encore acceptée par un employé
+        if ($commande->getStatut() === 'accepté') {
+            return $this->json(['error' => 'Impossible d\'annuler une commande déjà acceptée'], 400);
+        }
+
+        $commande->setStatut('annulée');
+        $em->flush();
+
+        return $this->json(['message' => 'Commande annulée']);
     }
 }

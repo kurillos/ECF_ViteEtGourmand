@@ -57,15 +57,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::TEXT)]
     private ?string $adresse_postale = null;
 
-    /**
+   /**
      * @var Collection<int, Commande>
      */
-    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'user')]
+    // CHANGEZ 'user' par 'client' si votre entité Commande possède une propriété $client
+    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'client')] 
     private Collection $commandes;
 
     public function __construct()
     {
-        $this->menu = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -203,25 +204,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getCommandes(): Collection
     {
-        return $this->menu;
+        return $this->commandes;
     }
 
-    public function addCommande(Commande $menu): static
+    public function addCommande(Commande $commande): static
     {
-        if (!$this->menu->contains($menu)) {
-            $this->menu->add($menu);
-            $menu->setUser($this);
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->setClient($this);
         }
 
         return $this;
     }
 
-    public function removeCommande(Commande $menu): static
+    public function removeCommande(Commande $commande): static
     {
-        if ($this->menu->removeElement($menu)) {
+        if ($this->commandes->removeElement($commande)) {
             // set the owning side to null (unless already changed)
-            if ($menu->getUser() === $this) {
-                $menu->setUser(null);
+            if ($commande->getClient() === $this) {
+                $commande->setClient(null);
             }
         }
 

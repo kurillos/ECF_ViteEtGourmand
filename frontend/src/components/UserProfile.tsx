@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import UserHistory from '../components/UserHistory';
 
 const UserProfile = () => {
     const navigate = useNavigate();
@@ -82,6 +83,11 @@ const UserProfile = () => {
                     <button type="submit" className="w-full bg-gray-900 text-white py-5 rounded-2xl font-black text-lg hover:bg-orange-600 transition shadow-lg transform hover:-translate-y-1">
                         ENREGISTRER LES MODIFICATIONS
                     </button>
+
+                    <div className="mt-12 border-t pt-8">
+                        <h2 className="text-2xl font-bold mb-6 italic">Mes Commandes Récentes</h2>
+                        <UserHistory />
+                    </div>
                     
                     <button type="button" onClick={() => {if(window.confirm("Supprimer votre compte ?")) { localStorage.removeItem('auth'); navigate('/'); window.location.reload(); }}} className="text-red-500 font-bold text-sm hover:underline">
                         Supprimer définitivement mon compte

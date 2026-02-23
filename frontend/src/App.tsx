@@ -15,6 +15,7 @@ import CommandeForm from './components/CommandeForm';
 import UserProfile from './components/UserProfile';
 import Navbar from './partials/Navbar';
 import Footer from './partials/Footer';
+import UserHistory from './components/UserHistory';
 
 function App () {
   return (
@@ -29,6 +30,7 @@ function App () {
     <Route path="/register" element={<Register />} />
     <Route path="/commande/:id" element={<CommandeForm />} />
     <Route path="/profil" element={<UserProfile />} />
+    <Route path="/mon-compte" element={<UserHistory />} />
     
     {/* Page principale du Dashboard */}
     <Route path="/admin" element={

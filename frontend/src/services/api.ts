@@ -118,6 +118,25 @@ export const hourService = {
     }
 };
 
+// --- SECTION COMMANDES (USER) ---
+    export const userService = {
+        // Récupérer l'historique du client connecté
+        getOrders: async () => {
+            const response = await fetch(`${API_URL}/user/commandes`, { 
+                headers: getAuthHeaders() 
+            });
+            return handleResponse(response);
+        },
+        // Annuler une commande
+        cancelOrder: async (id: number) => {
+            const response = await fetch(`${API_URL}/commande/${id}/annuler`, {
+                method: 'PATCH',
+                headers: getAuthHeaders(),
+            });
+            return handleResponse(response);
+        }
+    };
+
 // --- SECTION COMMANDES (ADMIN) ---
 export const commandeService = {
     getAll: async (statut?: string) => {
