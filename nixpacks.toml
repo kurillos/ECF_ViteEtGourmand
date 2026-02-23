@@ -8,8 +8,9 @@ nixPkgs = [
 ]
 
 [phases.install]
-# On ajoute COMPOSER_ALLOW_SUPERUSER=1 pour éviter les warnings de Railway
-cmds = ["cd backend_vite_gourmand && COMPOSER_ALLOW_SUPERUSER=1 composer install --optimize-autoloader --no-interaction --ignore-platform-req=ext-mongodb"]
+# On ajoute --no-scripts pour éviter que Symfony cherche le .env pendant l'installation
+cmds = ["cd backend_vite_gourmand && COMPOSER_ALLOW_SUPERUSER=1 composer install --optimize-autoloader --no-interaction --no-scripts --ignore-platform-req=ext-mongodb"]
 
 [start]
+# Au démarrage, Symfony utilisera les variables saisies dans Railway
 cmd = "cd backend_vite_gourmand && php bin/console doctrine:migrations:migrate --no-interaction && php bin/console lexik:jwt:generate-keypair --overwrite && heroku-php-apache2 public/"
