@@ -8,10 +8,9 @@ nixPkgs = [
 ]
 
 [phases.install]
-# On installe sans scripts, puis on génère manuellement le fichier de config de prod
 cmds = [
     "cd backend_vite_gourmand && COMPOSER_ALLOW_SUPERUSER=1 composer install --optimize-autoloader --no-interaction --no-scripts --ignore-platform-req=ext-mongodb",
-    "cd backend_vite_gourmand && COMPOSER_ALLOW_SUPERUSER=1 composer dump-env prod"
+    "cd backend_vite_gourmand && COMPOSER_ALLOW_SUPERUSER=1 composer dump-env prod --empty"
 ]
 
 [start]
