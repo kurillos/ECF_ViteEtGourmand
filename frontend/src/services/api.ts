@@ -1,6 +1,6 @@
 import { Menu } from '../types/Menu';
 
-const API_URL = 'http://localhost:8000/api';
+const API_URL = import.meta.env.VITE_API_URL;
 
 const getAuthHeaders = () => {
     const authString = localStorage.getItem('auth');
