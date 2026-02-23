@@ -7,6 +7,7 @@ import AdminNavbar from '../../partials/AdminNavbar';
 import AdminOrders from '../admin/AdminOrders';
 import AdminStats from '../../components/AdminStats';
 import AdminUserForm from './AdminUserForm';
+import EmployeList from '../../components/EmployeeList';
 
 const AdminDashboard: React.FC = () => {
     // 1. États (States)
@@ -99,13 +100,22 @@ const AdminDashboard: React.FC = () => {
                         </section>
                     )}
 
-                    {/* Gestion des Employés (Réservé à l'Admin) */}
                     {isAdmin && shouldShow('users') && (
                         <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                            <h2 className="text-xl font-bold mb-6 text-blue-600">👥 Gestion du personnel</h2>
+                        <h2 className="text-xl font-bold mb-6 text-blue-600">👥 Gestion du personnel</h2>
+        
+                            {/* Formulaire de création (Le haut de ton image actuelle) */}
                             <AdminUserForm />
+
+                            {/* Séparateur visuel */}
+                            <div className="my-10 border-t border-gray-100"></div>
+
+                            {/* Liste des employés (Pour la désactivation/licenciement) */}
+                            <h3 className="text-lg font-bold mb-4 text-gray-700">Liste des collaborateurs</h3>
+                                <EmployeList />
                         </section>
                     )}
+
 
                     {/* Statistiques MongoDB (Réservé à l'Admin) */}
                     {isAdmin && shouldShow('stats') && (
@@ -115,6 +125,7 @@ const AdminDashboard: React.FC = () => {
                     </section>
                     )}
 
+                   
                     {shouldShow('menus') && <AdminMenus />}
                     {shouldShow('horaires') && <AdminHoraires />}
                     {shouldShow('commandes') && <AdminOrders />}

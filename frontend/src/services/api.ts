@@ -260,10 +260,10 @@ export const adminService = {
     },
 
     // Récupérer les stats MongoDB (US: CA et comparaison menus)
-    getStats: async () => {
-        const response = await fetch(`${API_URL}/admin/stats`, {
+    getStats: async (period: string = '7d') => { 
+        const response = await fetch(`${API_URL}/admin/stats?period=${period}`, {
             headers: getAuthHeaders(),
         });
         return handleResponse(response);
-    }
+    },
 };

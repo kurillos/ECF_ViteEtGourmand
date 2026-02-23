@@ -50,4 +50,22 @@ class AdminUserController extends AbstractController
 
         return $this->json(['message' => 'Employé créé avec succès'], 201);
     }
+
+    // 1. Lister les employés
+    #[Route('/api/admin/employees', name: 'admin_list_employees', methods: ['GET'])]
+    public function listEmployees(UserRepository $userRepository): JsonResponse
+    {
+        $employees = $userRepository->findByRole('ROLE_EMPLOYE');
+        return $this->json($employees, 200, [], ['groups' => 'user:read']);
+    }
+
+    // 2. Basculer le statut (Actif / Inactif)
+    #[Route('/api/admin/users/{id}/toggle', name: 'admin_user_toggle', methods: ['PATCH'])]
+    public function toggleStatus(User $user, EntityManagerInterface $em): JsonResponse
+    {
+        $user->setIsActive(!$user->isActive());
+        $em->flush();
+
+        return $this->json(['isActive' => $user->isActive()]);
+    }
 }
