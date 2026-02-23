@@ -11,6 +11,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use App\Repository\UserRepository;
 
 class AdminUserController extends AbstractController
 {
@@ -56,7 +57,8 @@ class AdminUserController extends AbstractController
     public function listEmployees(UserRepository $userRepository): JsonResponse
     {
         $employees = $userRepository->findByRole('ROLE_EMPLOYE');
-        return $this->json($employees, 200, [], ['groups' => 'user:read']);
+        // On enlève le 4ème argument ['groups' => 'user:read'] pour éviter les objets vides
+        return $this->json($employees, 200); 
     }
 
     // 2. Basculer le statut (Actif / Inactif)

@@ -18,13 +18,13 @@ const EmployeList = () => {
     }, []);
 
     const loadEmployees = async () => {
-        try {
-            const data = await adminService.getStats(); // Ou ta future méthode listEmployees
-            setEmployees(data);
-        } catch (err) {
-            console.error("Erreur chargement employés", err);
-        }
-    };
+    try {
+        const data = await adminService.getAllEmployees(); // On appelle la bonne liste !
+        setEmployees(data);
+    } catch (err) {
+        console.error("Erreur chargement employés", err);
+    }
+};
 
     const handleToggle = async (id: number, currentStatus: boolean) => {
         try {

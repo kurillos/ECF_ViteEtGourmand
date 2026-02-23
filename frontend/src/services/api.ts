@@ -237,7 +237,7 @@ export const themeService = {
     }
 };
 
-    // --- SECTION ADMIN (GÉRÉ PAR JOSÉ) ---
+   // --- SECTION ADMIN (GÉRÉ PAR JOSÉ) ---
 export const adminService = {
     // Créer un employé (US: email + password, notification mail)
     createEmploye: async (data: any) => {
@@ -260,10 +260,19 @@ export const adminService = {
     },
 
     // Récupérer les stats MongoDB (US: CA et comparaison menus)
+    // Ajout du paramètre period pour les filtres
     getStats: async (period: string = '7d') => { 
         const response = await fetch(`${API_URL}/admin/stats?period=${period}`, {
             headers: getAuthHeaders(),
         });
         return handleResponse(response);
     },
+
+   getAllEmployees: async () => {
+    // L'URL DOIT être /admin/employees pour correspondre à ton contrôleur sécurisé
+    const response = await fetch(`${API_URL}/admin/employees`, { 
+        headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+}
 };

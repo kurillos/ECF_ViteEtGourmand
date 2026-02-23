@@ -3,17 +3,17 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import { adminService } from '../services/api';
 
 const AdminStats = () => {
-    // 1. Déclarer TOUS les états en haut
+    // 1. Déclaration des états
     const [data, setData] = useState<any[]>([]);
     const [filterMenu, setFilterMenu] = useState('all');
     const [filterPeriod, setFilterPeriod] = useState('7d');
 
-    // 2. useEffect après les déclarations d'états
+    // 2. Chargement des données quand la période change
     useEffect(() => {
         adminService.getStats(filterPeriod).then(setData);
     }, [filterPeriod]);
 
-    // 3. Logique de filtrage
+    // 3. Filtrage local par menu
     const filteredData = data.filter(item => 
         filterMenu === 'all' || item.menu === filterMenu
     );
@@ -24,19 +24,21 @@ const AdminStats = () => {
             
             {/* SECTION FILTRES */}
             <div className="flex gap-4 bg-gray-50 p-4 rounded-xl mb-8">
-                <select value={filterPeriod} onChange={(e) => setFilterPeriod(e.target.value)} className="border p-2 rounded">
+                <select value={filterPeriod} onChange={(e) => setFilterPeriod(e.target.value)} className="border p-2 rounded bg-white">
                     <option value="7d">7 derniers jours</option>
                     <option value="30d">30 derniers jours</option>
                     <option value="1y">Année en cours</option>
                 </select>
                 
-                <select value={filterMenu} onChange={(e) => setFilterMenu(e.target.value)} className="border p-2 rounded">
+                <select value={filterMenu} onChange={(e) => setFilterMenu(e.target.value)} className="border p-2 rounded bg-white">
                     <option value="all">Tous les menus</option>
-                    {data.map((m: any) => <option key={m.menu} value={m.menu}>{m.menu}</option>)}
+                    {data.map((m: any) => (
+                        <option key={m.menu} value={m.menu}>{m.menu}</option>
+                    ))}
                 </select>
             </div>
 
-            {/* GRAPHIQUE */}
+            {/* GRAPHIQUE UTILISANT LES DONNÉES FILTRÉES */}
             <div className="h-80 w-full mb-8">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={filteredData}>
@@ -52,9 +54,9 @@ const AdminStats = () => {
             {/* RÉCAPITULATIF CA */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {filteredData.map((item: any) => (
-                    <div key={item.menu} className="p-4 border rounded-xl bg-white">
+                    <div key={item.menu} className="p-4 border rounded-xl bg-white shadow-sm">
                         <p className="text-gray-500 text-sm uppercase font-bold">{item.menu}</p>
-                        <p className="text-2xl font-black">{item.ca} €</p>
+                        <p className="text-2xl font-black">{item.ca.toLocaleString()} €</p>
                         <p className="text-sm text-gray-400">{item.ventes} commandes</p>
                     </div>
                 ))}
