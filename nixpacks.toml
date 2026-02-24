@@ -2,7 +2,9 @@
 nixPkgs = ["php83", "php83Packages.composer", "php83Extensions.pdo_mysql", "php83Extensions.intl", "php83Extensions.mongodb"]
 
 [phases.install]
-cmds = ["cd backend_vite_gourmand && composer install --optimize-autoloader --no-interaction --no-scripts --ignore-platform-req=ext-mongodb"]
+cmds = [
+    "cd backend_vite_gourmand && echo 'APP_ENV=prod' > .env && composer install --optimize-autoloader"
+]
 
 [start]
 # On force l'export de APP_ENV avant toute commande PHP
