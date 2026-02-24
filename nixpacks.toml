@@ -1,11 +1,5 @@
 [phases.setup]
-nixPkgs = [
-    "php83", 
-    "php83Packages.composer", 
-    "php83Extensions.mongodb", 
-    "php83Extensions.pdo_mysql", 
-    "php83Extensions.intl"
-]
+nixPkgs = ["php83", "php83Packages.composer", "php83Extensions.mongodb", "php83Extensions.pdo_mysql", "php83Extensions.intl"]
 
 [phases.install]
 cmds = [
@@ -14,5 +8,5 @@ cmds = [
 ]
 
 [start]
-# On indique le chemin complet 'backend_vite_gourmand/bin/console' pour chaque commande
+# On utilise les chemins complets pour que Railway trouve bin/console
 cmd = "php backend_vite_gourmand/bin/console doctrine:migrations:migrate --no-interaction && php backend_vite_gourmand/bin/console lexik:jwt:generate-keypair --overwrite && heroku-php-apache2 backend_vite_gourmand/public/"
