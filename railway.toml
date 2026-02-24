@@ -1,6 +1,7 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "cd backend_vite_gourmand && touch .env && composer install --no-dev --optimize-autoloader --no-scripts"
+installCommand = "cd backend_vite_gourmand && composer install --ignore-platform-reqs"
+buildCommand = "cd backend_vite_gourmand && echo 'APP_ENV=prod' > .env"
 
 [deploy]
 startCommand = "cd backend_vite_gourmand && php -S 0.0.0.0:$PORT -t public"
