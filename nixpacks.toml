@@ -14,5 +14,5 @@ cmds = [
 ]
 
 [start]
-# On donne le chemin complet vers bin/console pour que Railway le trouve
+# On indique le chemin complet 'backend_vite_gourmand/bin/console' pour chaque commande
 cmd = "php backend_vite_gourmand/bin/console doctrine:migrations:migrate --no-interaction && php backend_vite_gourmand/bin/console lexik:jwt:generate-keypair --overwrite && heroku-php-apache2 backend_vite_gourmand/public/"
