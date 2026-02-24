@@ -10,3 +10,5 @@ cmds = [
 [start]
 # On force le chemin vers le sous-dossier pour TOUTES les commandes
 cmd = "php backend_vite_gourmand/bin/console doctrine:migrations:migrate --no-interaction && php backend_vite_gourmand/bin/console lexik:jwt:generate-keypair --overwrite && heroku-php-apache2 backend_vite_gourmand/public/"
+
+# Force rebuild 1
