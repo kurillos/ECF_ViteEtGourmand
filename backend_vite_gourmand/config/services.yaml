@@ -1,0 +1,23 @@
+# config/services.yaml
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        
+    # 1. Charge d'abord tout le dossier src
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    App\EventListener\AuthenticationSuccessListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
+
+    App\Service\StatService:
+        arguments:
+            $mongoUri: '%env(MONGODB_URL)%'
+            $mongoDb: '%env(MONGODB_DB)%'

@@ -1,0 +1,78 @@
+security:
+    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    role_hierarchy:
+        ROLE_ADMIN:   ROLE_EMPLOYE # L'admin hérite des droits de l'employé
+        ROLE_EMPLOYE: ROLE_USER
+
+    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    providers:
+        # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+        # used to reload user from session & other features (e.g. switch_user)
+        # used to reload user from session & other features (e.g. switch_user)
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        login:
+            pattern: ^/api/login_check
+            stateless: true
+            json_login:
+                check_path: /api/login_check
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        
+        api:
+            pattern: ^/api
+            stateless: true
+            jwt: ~
+            
+        main:
+            lazy: true
+            provider: app_user_provider
+            # Supprime toute ligne mentionning 'custom_authenticator' ou 'form_login'
+            # On laisse le firewall "ouvert" pour que notre contrôleur API fasse le travail
+
+    # Note: Only the *first* matching rule is applied
+    access_control:
+        # 1. Routes publiques
+        - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
+        - { path: ^/api/hours, roles: PUBLIC_ACCESS }
+        - { path: ^/api/menus, roles: PUBLIC_ACCESS }
+
+        # 2. Routes accessibles aux EMPLOYÉS (et donc aux ADMINS via la hiérarchie)
+        # On autorise Julie à voir les avis, les commandes, les plats etc.
+        - { path: ^/api/admin/avis, roles: ROLE_EMPLOYE }
+        - { path: ^/api/admin/commandes, roles: ROLE_EMPLOYE }
+        - { path: ^/api/admin/plats, roles: ROLE_EMPLOYE }
+        - { path: ^/api/admin/themes, roles: ROLE_EMPLOYE }
+        - { path: ^/api/admin/menus, roles: ROLE_EMPLOYE }
+
+        # 3. Routes strictement réservées à l'ADMIN (José uniquement)
+        # Si tu as des stats ou de la gestion d'utilisateurs
+        - { path: ^/api/admin/stats, roles: ROLE_ADMIN }
+        - { path: ^/api/admin/users, roles: ROLE_ADMIN }
+
+        # Sécurité par défaut pour le reste du préfixe admin
+        - { path: ^/api/admin, roles: ROLE_ADMIN }
+
+when@test:
+    security:
+        password_hashers:
+            # Password hashers are resource-intensive by design to ensure security.
+            # In tests, it's safe to reduce their cost to improve performance.
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4 # Lowest possible value for bcrypt
+                time_cost: 3 # Lowest possible value for argon
+                memory_cost: 10 # Lowest possible value for argon

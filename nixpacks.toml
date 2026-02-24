@@ -1,0 +1,12 @@
+[phases.setup]
+nixPkgs = ["php83", "php83Packages.composer", "php83Extensions.pdo_mysql", "php83Extensions.intl", "php83Extensions.mongodb"]
+
+[phases.install]
+# On crée le fichier .env ici pour éviter l'erreur "Unable to read"
+cmds = [
+    "cd backend_vite_gourmand && echo 'APP_ENV=prod' > .env",
+    "cd backend_vite_gourmand && composer install --optimize-autoloader --no-interaction --no-scripts --ignore-platform-req=ext-mongodb"
+]
+
+[start]
+cmd = "cd backend_vite_gourmand && composer dump-env prod --empty && php bin/console doctrine:migrations:migrate --no-interaction && php bin/console lexik:jwt:generate-keypair --overwrite --no-interaction && php -S 0.0.0.0:$PORT -t public/"
