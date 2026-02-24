@@ -2,13 +2,11 @@
 nixPkgs = ["php83", "php83Packages.composer", "php83Extensions.mongodb", "php83Extensions.pdo_mysql", "php83Extensions.intl"]
 
 [phases.install]
+# On enlève la commande dump-env du build pour éviter le cache figé
 cmds = [
-    "cd backend_vite_gourmand && COMPOSER_ALLOW_SUPERUSER=1 composer install --optimize-autoloader --no-interaction --no-scripts --ignore-platform-req=ext-mongodb",
-    "cd backend_vite_gourmand && COMPOSER_ALLOW_SUPERUSER=1 composer dump-env prod --empty"
+    "cd backend_vite_gourmand && COMPOSER_ALLOW_SUPERUSER=1 composer install --optimize-autoloader --no-interaction --no-scripts --ignore-platform-req=ext-mongodb"
 ]
 
 [start]
-# On force le chemin vers le sous-dossier pour TOUTES les commandes
-cmd = "php backend_vite_gourmand/bin/console doctrine:migrations:migrate --no-interaction && php backend_vite_gourmand/bin/console lexik:jwt:generate-keypair --overwrite && heroku-php-apache2 backend_vite_gourmand/public/"
-
-# Force rebuild 1
+# On génère le fichier env JUSTE AVANT de lancer les migrations, au moment du démarrage
+cmd = "cd backend_vite_gourmand && composer dump-env prod --empty && php bin/console doctrine:migrations:migrate --no-interaction && php bin/console lexik:jwt:generate-keypair --overwrite && heroku-php-apache2 public/"
