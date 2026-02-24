@@ -1,6 +1,7 @@
 [build]
 builder = "NIXPACKS"
+buildCommand = "cd backend_vite_gourmand && touch .env && composer install --no-dev --optimize-autoloader --no-scripts"
 
 [deploy]
-startCommand = "php -S 0.0.0.0:$PORT -t public"
+startCommand = "cd backend_vite_gourmand && php -S 0.0.0.0:$PORT -t public"
 restartPolicyType = "ON_FAILURE"
