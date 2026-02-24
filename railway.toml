@@ -4,5 +4,5 @@ installCommand = "cd backend_vite_gourmand && composer install --ignore-platform
 buildCommand = "cd backend_vite_gourmand && echo 'APP_ENV=prod' > .env"
 
 [deploy]
-startCommand = "cd backend_vite_gourmand && php -S 0.0.0.0:$PORT -t public"
+startCommand = "php -S 0.0.0.0:$PORT -t backend_vite_gourmand/public backend_vite_gourmand/public/index.html"
 restartPolicyType = "ON_FAILURE"
