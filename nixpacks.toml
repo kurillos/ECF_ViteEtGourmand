@@ -2,10 +2,12 @@
 nixPkgs = ["php83", "php83Packages.composer", "php83Extensions.pdo_mysql", "php83Extensions.intl", "php83Extensions.mongodb"]
 
 [phases.install]
+# On crée le fichier .env ici pour éviter l'erreur "Unable to read"
 cmds = [
-    "cd backend_vite_gourmand && echo 'APP_ENV=prod' > .env && composer install --optimize-autoloader"
+    "cd backend_vite_gourmand && echo 'APP_ENV=prod' > .env",
+    "cd backend_vite_gourmand && composer install --optimize-autoloader --no-interaction --no-scripts --ignore-platform-req=ext-mongodb"
 ]
 
 [start]
-# On force l'export de APP_ENV avant toute commande PHP
-cmd = "cd backend_vite_gourmand && export APP_ENV=prod && composer dump-env prod --empty && php bin/console doctrine:migrations:migrate --no-interaction && heroku-php-apache2 public/"
+# On s'assure que le dump-env est fait au démarrage pour lier tes variables Railway
+cmd = "cd backend_vite_gourmand && composer dump-env prod --empty && php bin/console doctrine:migrations:migrate --no-interaction && heroku-php-apache2 public/"
