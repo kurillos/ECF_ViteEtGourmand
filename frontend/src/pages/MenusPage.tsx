@@ -35,7 +35,7 @@ const MenusPage = () => {
         const result = menus.filter(menu => {
             const prix = parseFloat(menu.prix_menu);
             const matchPrix = prix >= minPrice && prix <= maxPrice;
-            const matchTheme = selectedTheme === '' || menu.theme?.libelle === selectedTheme;
+            const matchTheme = selectedTheme === '' || menu.theme_id === selectedTheme;
             const matchRegime = selectedRegime === '' || menu.regime === selectedRegime;
             const matchPersons = menu.nb_personnes >= minPersons;
 

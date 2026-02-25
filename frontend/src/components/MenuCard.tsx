@@ -26,7 +26,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ menu }) => {
     >
        <div className="relative h-56 w-full bg-gray-100 overflow-hidden">
         <img 
-            src={`http://localhost:8000${menu.image_url}`} 
+            src={menu.image_url} 
             alt={menu.titre_menu} 
             className="w-full h-full object-cover"
             onError={(e) => {
