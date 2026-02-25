@@ -1,8 +1,0 @@
-[build]
-builder = "NIXPACKS"
-installCommand = "cd backend_vite_gourmand && composer install --ignore-platform-reqs"
-buildCommand = "cd backend_vite_gourmand && echo 'APP_ENV=prod' > .env"
-
-[deploy]
-cd backend_vite_gourmand/public && php -S 0.0.0.0:$PORT
-restartPolicyType = "ON_FAILURE"
