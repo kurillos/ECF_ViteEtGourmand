@@ -8,10 +8,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted; 
 
 final class OpeningHourController extends AbstractController
 {
     #[Route('/api/admin/hours', name: 'app_admin_hours_index', methods: ['GET'])]
+    #[IsGranted('ROLE_EMPLOYE')]
     public function index(OpeningHourRepository $repository): JsonResponse
     {
       $hours = $repository->findAll();
@@ -19,6 +21,8 @@ final class OpeningHourController extends AbstractController
     }
 
     #[Route('/api/admin/hours/{id}', name: 'app_admin_hours_update', methods: ['PUT', 'OPTIONS'])]
+    // AJOUT ICI AUSSI :
+    #[IsGranted('ROLE_EMPLOYE')]
     public function update(
         int $id,
         Request $request,

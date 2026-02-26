@@ -8,56 +8,45 @@ export interface AdminNavbarProps {
 
 const AdminNavbar: React.FC<AdminNavbarProps> = ({ activeTab, onTabChange }) => {
     return (
-        <nav className="bg-white shadow-sm border-b border-gray-100 mb-8">
-            <div className="max-w-7xl mx-auto px-8 py-4 flex justify-between items-center">
-                <div className="flex items-center gap-6">
-                    <span className="text-xl font-bold text-orange-600 italic cursor-default">
+        <nav className="bg-white shadow-sm border-b border-gray-100 mb-8 w-full">
+            {/* Conteneur principal flexible */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+                
+                {/* LOGO ET TITRE */}
+                <div className="flex items-center justify-between w-full md:w-auto">
+                    <span className="text-xl font-bold text-orange-600 italic">
                         Vite & Gourmand Admin
                     </span>
-                    
-                    <div className="flex gap-2">
-                        <button 
-                            onClick={() => onTabChange('avis')}
-                            className={`px-4 py-2 rounded-lg font-bold transition ${activeTab === 'avis' ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
-                        >
-                            Avis
-                        </button>
-                        <button 
-                            onClick={() => onTabChange('menus')}
-                            className={`px-4 py-2 rounded-lg font-bold transition ${activeTab === 'menus' ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
-                        >
-                            Menus
-                        </button>
-                        <button 
-                            onClick={() => onTabChange('horaires')}
-                            className={`px-4 py-2 rounded-lg font-bold transition ${activeTab === 'horaires' ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
-                        >
-                            Horaires
-                        </button>
-                        <button 
-                            onClick={() => onTabChange('commandes')}
-                            className={`px-4 py-2 rounded-lg font-bold transition ${activeTab === 'commandes' ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
-                        >
-                            📦 Commandes
-                        </button>
-                        <button 
-                            onClick={() => onTabChange('users')}
-                            className={`px-4 py-2 rounded-lg font-bold transition ${activeTab === 'users' ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
-                        >
-                            👥 Employés
-                        </button>
-                        <button 
-                            onClick={() => onTabChange('stats')}
-                            className={`px-4 py-2 rounded-lg font-bold transition ${activeTab === 'stats' ? 'bg-orange-50 text-orange-600' : 'text-gray-500 hover:bg-gray-50'}`}
-                        >
-                            📊 Stats NoSQL
-                        </button>
-                    </div>
                 </div>
 
+                {/* BOUTONS */}
+                <div className="flex flex-wrap justify-center md:justify-start gap-2 w-full md:w-auto">
+                    {[
+                        { id: 'avis', label: 'Avis' },
+                        { id: 'menus', label: 'Menus' },
+                        { id: 'horaires', label: 'Horaires' },
+                        { id: 'commandes', label: '📦 Commandes' },
+                        { id: 'users', label: '👥 Employés' },
+                        { id: 'stats', label: '📊 Tableau de Bord' },
+                    ].map((tab) => (
+                        <button 
+                            key={tab.id}
+                            onClick={() => onTabChange(tab.id)}
+                            className={`px-3 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap ${
+                                activeTab === tab.id 
+                                ? 'bg-orange-50 text-orange-600' 
+                                : 'text-gray-500 hover:bg-gray-50'
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* BOUTON DÉCONNEXION */}
                 <button 
                     onClick={logout}
-                    className="text-red-500 font-bold hover:text-red-700 transition"
+                    className="text-red-500 font-bold hover:text-red-700 transition text-sm py-2"
                 >
                     Déconnexion
                 </button>
@@ -65,5 +54,3 @@ const AdminNavbar: React.FC<AdminNavbarProps> = ({ activeTab, onTabChange }) => 
         </nav>
     );
 };
-
-export default AdminNavbar;

@@ -53,6 +53,7 @@ security:
         # 2. Routes accessibles aux EMPLOYÉS (et donc aux ADMINS via la hiérarchie)
         # On autorise Julie à voir les avis, les commandes, les plats etc.
         - { path: ^/api/admin/avis, roles: ROLE_EMPLOYE }
+        - { path: ^/api/admin/hours, roles: ROLE_EMPLOYE }
         - { path: ^/api/admin/commandes, roles: ROLE_EMPLOYE }
         - { path: ^/api/admin/plats, roles: ROLE_EMPLOYE }
         - { path: ^/api/admin/themes, roles: ROLE_EMPLOYE }
